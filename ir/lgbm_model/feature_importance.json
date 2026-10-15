@@ -1,0 +1,182 @@
+[
+  {
+    "rank": 1,
+    "feature": "get_keyed_prop",
+    "gain": 718015.57,
+    "splits": 280
+  },
+  {
+    "rank": 2,
+    "feature": "load_closure_var",
+    "gain": 249550.54,
+    "splits": 787
+  },
+  {
+    "rank": 3,
+    "feature": "call_func get_keyed_prop",
+    "gain": 237631.93,
+    "splits": 163
+  },
+  {
+    "rank": 4,
+    "feature": "get_named_prop",
+    "gain": 211450.87,
+    "splits": 700
+  },
+  {
+    "rank": 5,
+    "feature": "return",
+    "gain": 195687.1,
+    "splits": 961
+  },
+  {
+    "rank": 6,
+    "feature": "call_func",
+    "gain": 166258.33,
+    "splits": 669
+  },
+  {
+    "rank": 7,
+    "feature": "load_closure_var call_func",
+    "gain": 83604.76,
+    "splits": 241
+  },
+  {
+    "rank": 8,
+    "feature": "load_undefined call_func",
+    "gain": 83188.46,
+    "splits": 243
+  },
+  {
+    "rank": 9,
+    "feature": "pop_scope",
+    "gain": 81645.68,
+    "splits": 125
+  },
+  {
+    "rank": 10,
+    "feature": "call_func pop",
+    "gain": 80205.88,
+    "splits": 390
+  },
+  {
+    "rank": 11,
+    "feature": "store_closure_var",
+    "gain": 79208.31,
+    "splits": 356
+  },
+  {
+    "rank": 12,
+    "feature": "load_undefined set_exception",
+    "gain": 69639.08,
+    "splits": 51
+  },
+  {
+    "rank": 13,
+    "feature": "call_func store_local",
+    "gain": 62009.41,
+    "splits": 358
+  },
+  {
+    "rank": 14,
+    "feature": "load_global get_named_prop",
+    "gain": 61084.77,
+    "splits": 170
+  },
+  {
+    "rank": 15,
+    "feature": "call_func return",
+    "gain": 59608.86,
+    "splits": 351
+  },
+  {
+    "rank": 16,
+    "feature": "swap call_func",
+    "gain": 59283.21,
+    "splits": 226
+  },
+  {
+    "rank": 17,
+    "feature": "load_arg",
+    "gain": 58998.92,
+    "splits": 503
+  },
+  {
+    "rank": 18,
+    "feature": "load_undefined",
+    "gain": 57726.27,
+    "splits": 493
+  },
+  {
+    "rank": 19,
+    "feature": "store_local store_local",
+    "gain": 55290.58,
+    "splits": 229
+  },
+  {
+    "rank": 20,
+    "feature": "load_closure_var load_closure_var",
+    "gain": 54974.12,
+    "splits": 177
+  },
+  {
+    "rank": 21,
+    "feature": "try_start",
+    "gain": 53239.56,
+    "splits": 32
+  },
+  {
+    "rank": 22,
+    "feature": "swap load_local",
+    "gain": 49176.92,
+    "splits": 116
+  },
+  {
+    "rank": 23,
+    "feature": "load_int",
+    "gain": 48919.78,
+    "splits": 389
+  },
+  {
+    "rank": 24,
+    "feature": "load_int get_keyed_prop",
+    "gain": 45754.05,
+    "splits": 130
+  },
+  {
+    "rank": 25,
+    "feature": "create_closure",
+    "gain": 45234.51,
+    "splits": 434
+  },
+  {
+    "rank": 26,
+    "feature": "load_const binary_add",
+    "gain": 45140.0,
+    "splits": 30
+  },
+  {
+    "rank": 27,
+    "feature": "store_local call_method",
+    "gain": 44843.1,
+    "splits": 132
+  },
+  {
+    "rank": 28,
+    "feature": "create_closure dup",
+    "gain": 44551.07,
+    "splits": 62
+  },
+  {
+    "rank": 29,
+    "feature": "load_global",
+    "gain": 43233.0,
+    "splits": 381
+  },
+  {
+    "rank": 30,
+    "feature": "get_keyed_prop get_keyed_prop",
+    "gain": 42447.48,
+    "splits": 59
+  }
+]

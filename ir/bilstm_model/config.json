@@ -1,0 +1,15 @@
+{
+  "neg_ratio": 10.0,
+  "max_len": 512,
+  "emb_dim": 64,
+  "hidden_dim": 256,
+  "num_layers": 2,
+  "dropout": 0.3,
+  "epochs": 15,
+  "batch_size": 512,
+  "lr": 0.001,
+  "out": "/home/users/jhdssilva/tcc/ir/bilstm_782351",
+  "seed": 42,
+  "dataset": "/home/users/jhdssilva/tcc/ir/data/translated_dataset.parquet",
+  "vocab_size": 136
+}

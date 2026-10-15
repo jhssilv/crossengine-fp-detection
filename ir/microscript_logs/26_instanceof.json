@@ -1,0 +1,38 @@
+{
+  "script": "26_instanceof",
+  "v8": [
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_6211134554334037388",
+      "script_url": "",
+      "start_pos": 0,
+      "end_pos": 0,
+      "bytecodes": "LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_5037797807193151296",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/26_instanceof/page.html",
+      "start_pos": 0,
+      "end_pos": 177,
+      "bytecodes": "LdaConstant,Star1,Mov,CallRuntime,LdaGlobal,Star1,CreateArrayLiteral,Star2,CallUndefinedReceiver1,LdaGlobal,Star1,CreateEmptyObjectLiteral,Star2,CallUndefinedReceiver1,Star0,Return"
+    },
+    {
+      "function_name": "instanceofCheck",
+      "injected_id": "fn_7227057574203006067",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/26_instanceof/page.html",
+      "start_pos": 25,
+      "end_pos": 126,
+      "bytecodes": "LdaGlobal,TestInstanceOf,Star0,LdaGlobal,TestInstanceOf,Star1,Ldar,JumpIfToBooleanFalse,Ldar,Return"
+    }
+  ],
+  "sm": [
+    {
+      "function_name": "instanceofCheck",
+      "injected_id": "instanceofCheck",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/26_instanceof/page.html",
+      "script_id": "1",
+      "bytecodes": "GetArg, GetGName, Instanceof, SetLocal, Pop, GetArg, GetGName, Instanceof, SetLocal, Pop, GetLocal, And, JumpTarget, Pop, GetLocal, JumpTarget, Return, RetRval,"
+    }
+  ]
+}

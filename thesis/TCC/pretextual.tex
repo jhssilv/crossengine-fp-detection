@@ -1,0 +1,69 @@
+% ============================================================
+%  Elementos pré-textuais: resumo, abstract
+% ============================================================
+
+% -----------------------------------------------------------
+% RESUMO (português)
+% -----------------------------------------------------------
+\begin{abstract}
+
+O rastreamento persistente de usuários na web por meio de browser
+fingerprinting (coleta silenciosa de atributos do navegador para construção
+de identificadores únicos sem o uso de cookies) tornou-se amplamente
+adotado por redes de publicidade e serviços de análise de audiência. Trabalhos
+recentes demonstraram que bytecodes emitidos pelo motor JavaScript V8 são
+suficientemente discriminativos para detectar funções de fingerprinting
+com F1 $\approx$ 0,95, sem acesso ao código-fonte original. No entanto, essa
+abordagem é restrita ao V8: os opcodes do V8 e do SpiderMonkey (motor do Firefox)
+são disjuntos, exigindo retreinamento completo para cada nova arquitetura de motor.
+
+Este trabalho propõe uma representação intermediária (RI) cross-engine que mapeia
+os opcodes de V8 e SpiderMonkey para um vocabulário compartilhado de 145 tokens,
+com cobertura de 99,82\% em um corpus real de 68 milhões de funções JavaScript
+coletadas dos 10.000 sites mais populares da lista Tranco. Sobre essa
+representação, classificadores são treinados em duas tarefas: detecção binária de
+fingerprinting e classificação multilabel em sete categorias. O melhor
+modelo (LightGBM com bigramas e densidade de script) atinge F1~=~0,853;
+uma estratégia de inferência iterativa eleva o resultado implantável para
+F1~=~0,904.
+
+Experimentos de generalização demonstram que transferência zero-shot entre motores
+falha (F1 entre 0,149 e 0,180), mas um modelo treinado conjuntamente em ambos, aumentado por contexto iterativo,
+atinge F1~=~0,903 no Chromium e F1~=~0,904 no Firefox a partir de um único conjunto de
+pesos. O custo da portabilidade é de aproximadamente 5 pontos de F1 em relação ao
+ByteDefender (F1 $\approx$ 0,950). O modelo classifica funções a 44~µs em CPU,
+viabilizando detecção em tempo real.
+
+\end{abstract}
+
+% -----------------------------------------------------------
+% ABSTRACT (inglês)
+% -----------------------------------------------------------
+\begin{englishabstract}{Cross-Engine Browser Fingerprinting Detection via JavaScript Bytecode Intermediate Representation}{browser fingerprinting. intermediate representation. JavaScript bytecodes. JavaScript engines. machine learning. V8. SpiderMonkey}
+
+Persistent user tracking through browser fingerprinting (the silent collection
+of browser attributes to build cookie-free identifiers) is widely deployed by
+advertising networks and analytics services. Recent work has shown that bytecodes
+emitted by the V8 JavaScript engine can detect fingerprinting functions with
+F1 $\approx$ 0.95, but this approach does not transfer across engines: V8 and
+SpiderMonkey (Firefox) opcodes are disjoint, requiring full retraining for each
+engine.
+
+This work proposes a cross-engine intermediate representation (IR) that maps the
+opcodes of both engines to a shared 145-token vocabulary, achieving 99.82\% token
+coverage on a corpus of 68 million JavaScript functions from the Tranco Top 10,000
+sites. Classifiers trained on this representation are evaluated on binary
+fingerprinting detection and multilabel classification across seven categories. The
+best model (LightGBM with bigrams and script-level density) achieves
+F1~=~0.853; an iterative inference strategy raises the deployable result to
+F1~=~0.904.
+
+Cross-engine experiments show that zero-shot transfer fails (F1 between 0.149 and 0.180),
+but a single model jointly trained on both engines, augmented with iterative script
+context, achieves F1~=~0.903 on Chromium and F1~=~0.904 on Firefox with no
+per-engine retraining. The $\sim$5-point F1 cost
+relative to ByteDefender (F1 $\approx$ 0.950) reflects the price of portability
+across a heterogeneous browser ecosystem. The model classifies functions at
+44~µs each on CPU, enabling real-time detection without specialized hardware.
+
+\end{englishabstract}

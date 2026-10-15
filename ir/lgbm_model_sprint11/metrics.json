@@ -1,0 +1,24 @@
+{
+  "f1": 0.9276400243226809,
+  "precision": 0.944031903190319,
+  "recall": 0.911807676982335,
+  "threshold": 0.9,
+  "train_size": 420648,
+  "test_size": 105162,
+  "n_tfidf_features": 4723,
+  "dense_feature_importances": {
+    "token_count_norm": 926,
+    "call_density": 675,
+    "branch_ratio": 267,
+    "prop_access_ratio": 598,
+    "unique_token_ratio": 270,
+    "seq_entropy_norm": 592,
+    "script_fp_density": 1929,
+    "script_fp_count_log": 1389,
+    "script_size_log": 1599,
+    "script_gt_density": 2045
+  },
+  "baseline_density_f1": 0.853,
+  "delta": 0.0746,
+  "binary": true
+}

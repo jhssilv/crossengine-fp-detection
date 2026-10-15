@@ -1,0 +1,24 @@
+{
+  "vocab_size": 140,
+  "d_model": 128,
+  "nhead": 4,
+  "num_layers": 2,
+  "dim_feedforward": 512,
+  "dropout": 0.1,
+  "num_labels": 7,
+  "max_len": 512,
+  "neg_ratio": 10.0,
+  "epochs_trained": 8,
+  "best_val_macro_f1": 0.17093353754808716,
+  "label_names": [
+    "label_canvas",
+    "label_audio",
+    "label_webrtc",
+    "label_font",
+    "label_webgl",
+    "label_screen",
+    "label_navigator"
+  ],
+  "train_size": 391752,
+  "val_size": 97939
+}

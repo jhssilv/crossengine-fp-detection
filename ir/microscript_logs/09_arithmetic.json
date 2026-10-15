@@ -1,0 +1,38 @@
+{
+  "script": "09_arithmetic",
+  "v8": [
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_6211134554334037388",
+      "script_url": "",
+      "start_pos": 0,
+      "end_pos": 0,
+      "bytecodes": "LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_15166086995497063917",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/09_arithmetic/page.html",
+      "start_pos": 0,
+      "end_pos": 184,
+      "bytecodes": "LdaConstant,Star1,Mov,CallRuntime,LdaGlobal,Star1,LdaSmi,Star2,LdaSmi,Star3,CallUndefinedReceiver2,Star0,Return"
+    },
+    {
+      "function_name": "arithmetic",
+      "injected_id": "fn_9556244603865069234",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/09_arithmetic/page.html",
+      "start_pos": 20,
+      "end_pos": 163,
+      "bytecodes": "Ldar,Add,Star0,Ldar,Sub,Star1,Ldar,Mul,Star2,Ldar,Div,Star3,Ldar,Mod,Star4,Ldar,Add,Star5,Ldar,Add,Star5,Ldar,Add,Star5,Ldar,Add,Return"
+    }
+  ],
+  "sm": [
+    {
+      "function_name": "arithmetic",
+      "injected_id": "arithmetic",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/09_arithmetic/page.html",
+      "script_id": "1",
+      "bytecodes": "GetArg, GetArg, Add, SetLocal, Pop, GetArg, GetArg, Sub, SetLocal, Pop, GetArg, GetArg, Mul, SetLocal, Pop, GetArg, GetArg, Div, SetLocal, Pop, GetArg, GetArg, Mod, SetLocal, Pop, GetLocal, GetLocal, Add, GetLocal, Add, GetLocal, Add, GetLocal, Add, Return, RetRval,"
+    }
+  ]
+}

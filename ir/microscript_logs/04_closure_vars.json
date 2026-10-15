@@ -1,0 +1,53 @@
+{
+  "script": "04_closure_vars",
+  "v8": [
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_6211134554334037388",
+      "script_url": "",
+      "start_pos": 0,
+      "end_pos": 0,
+      "bytecodes": "LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_15005133978521651905",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/04_closure_vars/page.html",
+      "start_pos": 0,
+      "end_pos": 176,
+      "bytecodes": "LdaConstant,Star1,Mov,CallRuntime,LdaGlobal,Star1,CallUndefinedReceiver0,StaGlobal,LdaGlobal,Star1,CallUndefinedReceiver0,Star0,Return"
+    },
+    {
+      "function_name": "makeCounter",
+      "injected_id": "fn_1459154308667801310",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/04_closure_vars/page.html",
+      "start_pos": 21,
+      "end_pos": 134,
+      "bytecodes": "CreateFunctionContextWithCells,PushContext,CreateClosure,Star0,LdaZero,StaCurrentContextSlot,Ldar,Return"
+    },
+    {
+      "function_name": "increment",
+      "injected_id": "fn_5067380438544060860",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/04_closure_vars/page.html",
+      "start_pos": 63,
+      "end_pos": 112,
+      "bytecodes": "LdaCurrentContextSlot,AddSmi,StaCurrentContextSlot,LdaCurrentContextSlot,Return"
+    }
+  ],
+  "sm": [
+    {
+      "function_name": "increment",
+      "injected_id": "increment",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/04_closure_vars/page.html",
+      "script_id": "2",
+      "bytecodes": "GetAliasedVar, One, Add, SetAliasedVar, Pop, GetAliasedVar, Return, RetRval,"
+    },
+    {
+      "function_name": "makeCounter",
+      "injected_id": "makeCounter",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/04_closure_vars/page.html",
+      "script_id": "1",
+      "bytecodes": "Lambda, SetLocal, Pop, Zero, SetAliasedVar, Pop, GetLocal, Return, RetRval,"
+    }
+  ]
+}

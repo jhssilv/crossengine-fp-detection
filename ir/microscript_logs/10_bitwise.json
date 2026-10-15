@@ -1,0 +1,38 @@
+{
+  "script": "10_bitwise",
+  "v8": [
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_6211134554334037388",
+      "script_url": "",
+      "start_pos": 0,
+      "end_pos": 0,
+      "bytecodes": "LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_4337182120103040474",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/10_bitwise/page.html",
+      "start_pos": 0,
+      "end_pos": 210,
+      "bytecodes": "LdaConstant,Star1,Mov,CallRuntime,LdaGlobal,Star1,LdaSmi,Star2,LdaSmi,Star3,CallUndefinedReceiver2,Star0,Return"
+    },
+    {
+      "function_name": "bitwise",
+      "injected_id": "fn_16613792998242596090",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/10_bitwise/page.html",
+      "start_pos": 17,
+      "end_pos": 188,
+      "bytecodes": "Ldar,BitwiseOr,Star0,Ldar,BitwiseAnd,Star1,Ldar,BitwiseXor,Star2,Ldar,ShiftLeft,Star3,Ldar,ShiftRight,Star4,Ldar,ShiftRightLogical,Star5,Ldar,Add,Star6,Ldar,Add,Star6,Ldar,Add,Star6,Ldar,Add,Star6,Ldar,Add,Return"
+    }
+  ],
+  "sm": [
+    {
+      "function_name": "bitwise",
+      "injected_id": "bitwise",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/10_bitwise/page.html",
+      "script_id": "1",
+      "bytecodes": "GetArg, GetArg, BitOr, SetLocal, Pop, GetArg, GetArg, BitAnd, SetLocal, Pop, GetArg, GetArg, BitXor, SetLocal, Pop, GetArg, GetArg, Lsh, SetLocal, Pop, GetArg, GetArg, Rsh, SetLocal, Pop, GetArg, GetArg, Ursh, SetLocal, Pop, GetLocal, GetLocal, Add, GetLocal, Add, GetLocal, Add, GetLocal, Add, GetLocal, Add, Return, RetRval,"
+    }
+  ]
+}

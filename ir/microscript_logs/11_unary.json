@@ -1,0 +1,38 @@
+{
+  "script": "11_unary",
+  "v8": [
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_6211134554334037388",
+      "script_url": "",
+      "start_pos": 0,
+      "end_pos": 0,
+      "bytecodes": "LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_13367872230206729016",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/11_unary/page.html",
+      "start_pos": 0,
+      "end_pos": 158,
+      "bytecodes": "LdaConstant,Star1,Mov,CallRuntime,LdaGlobal,Star1,LdaSmi,Star2,CallUndefinedReceiver1,Star0,Return"
+    },
+    {
+      "function_name": "unary",
+      "injected_id": "fn_1979310774722886399",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/11_unary/page.html",
+      "start_pos": 15,
+      "end_pos": 146,
+      "bytecodes": "Ldar,Negate,Star0,Ldar,BitwiseNot,Star1,Ldar,ToBooleanLogicalNot,Star2,Ldar,AddSmi,Star3,Ldar,SubSmi,Star4,Ldar,Add,Star5,Ldar,Add,Star5,Ldar,Add,Return"
+    }
+  ],
+  "sm": [
+    {
+      "function_name": "unary",
+      "injected_id": "unary",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/11_unary/page.html",
+      "script_id": "1",
+      "bytecodes": "GetArg, Neg, SetLocal, Pop, GetArg, BitNot, SetLocal, Pop, GetArg, Not, SetLocal, Pop, GetArg, One, Add, SetLocal, Pop, GetArg, One, Sub, SetLocal, Pop, GetLocal, GetLocal, Add, GetLocal, Add, GetLocal, Add, Return, RetRval,"
+    }
+  ]
+}

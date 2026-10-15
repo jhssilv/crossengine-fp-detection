@@ -1,0 +1,38 @@
+{
+  "script": "03_global_vars",
+  "v8": [
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_6211134554334037388",
+      "script_url": "",
+      "start_pos": 0,
+      "end_pos": 0,
+      "bytecodes": "LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_14991275791638867470",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/03_global_vars/page.html",
+      "start_pos": 0,
+      "end_pos": 107,
+      "bytecodes": "LdaConstant,Star1,Mov,CallRuntime,LdaZero,StaGlobal,LdaGlobal,Star1,CallUndefinedReceiver0,Star0,Return"
+    },
+    {
+      "function_name": "globalVars",
+      "injected_id": "fn_13920162959145732612",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/03_global_vars/page.html",
+      "start_pos": 39,
+      "end_pos": 91,
+      "bytecodes": "LdaGlobal,AddSmi,StaGlobal,LdaGlobal,Return"
+    }
+  ],
+  "sm": [
+    {
+      "function_name": "globalVars",
+      "injected_id": "globalVars",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/03_global_vars/page.html",
+      "script_id": "1",
+      "bytecodes": "BindUnqualifiedGName, GetGName, One, Add, SetGName, Pop, GetGName, Return, RetRval,"
+    }
+  ]
+}

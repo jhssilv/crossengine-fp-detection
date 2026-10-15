@@ -1,0 +1,54 @@
+{
+  "script": "24_try_catch",
+  "v8": [
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_6211134554334037388",
+      "script_url": "",
+      "start_pos": 0,
+      "end_pos": 0,
+      "bytecodes": "LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_2740919795342507519",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/24_try_catch/page.html",
+      "start_pos": 0,
+      "end_pos": 193,
+      "bytecodes": "LdaConstant,Star1,Mov,CallRuntime,LdaGlobal,Star1,LdaSmi,Star2,CallUndefinedReceiver1,LdaGlobal,Star1,LdaSmi,Star2,CallUndefinedReceiver1,Star0,Return"
+    },
+    {
+      "function_name": "tryCatch",
+      "injected_id": "fn_8977161652869534754",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/24_try_catch/page.html",
+      "start_pos": 18,
+      "end_pos": 164,
+      "bytecodes": "Mov,LdaZero,TestLessThan,JumpIfFalse,LdaGlobal,Star2,LdaConstant,Star3,Ldar,Construct,Throw,Ldar,MulSmi,Star0,Jump,Star2,CreateCatchContext,Star1,LdaTheHole,SetPendingMessage,Ldar,PushContext,LdaZero,Star0,PopContext,Ldar,Return"
+    },
+    {
+      "function_name": "tryCatch",
+      "injected_id": "fn_8977161652869534754",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/24_try_catch/page.html",
+      "start_pos": 18,
+      "end_pos": 164,
+      "bytecodes": "Mov,LdaZero,TestLessThan,JumpIfFalse,LdaGlobal,Star2,LdaConstant,Star3,Ldar,Construct,Throw,Ldar,MulSmi,Star0,Jump,Star2,CreateCatchContext,Star1,LdaTheHole,SetPendingMessage,Ldar,PushContext,LdaZero,Star0,PopContext,Ldar,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_2740919795342507519",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/24_try_catch/page.html",
+      "start_pos": 0,
+      "end_pos": 193,
+      "bytecodes": "LdaConstant,Star1,Mov,CallRuntime,LdaGlobal,Star1,LdaSmi,Star2,CallUndefinedReceiver1,LdaGlobal,Star1,LdaSmi,Star2,CallUndefinedReceiver1,Star0,Return"
+    }
+  ],
+  "sm": [
+    {
+      "function_name": "tryCatch",
+      "injected_id": "tryCatch",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/24_try_catch/page.html",
+      "script_id": "1",
+      "bytecodes": "Try, GetArg, Zero, Lt, JumpIfFalse, JumpTarget, GetGName, IsConstructing, String, DupAt, New, Throw, JumpTarget, GetArg, Int8, Mul, SetLocal, Pop, Goto, JumpTarget, Undefined, SetRval, Exception, Uninitialized, InitLexical, Pop, InitLexical, Pop, Zero, SetLocal, Pop, DebugLeaveLexicalEnv, JumpTarget, GetLocal, Return, RetRval,"
+    }
+  ]
+}

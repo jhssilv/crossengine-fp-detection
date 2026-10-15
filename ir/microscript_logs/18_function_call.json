@@ -1,0 +1,53 @@
+{
+  "script": "18_function_call",
+  "v8": [
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_6211134554334037388",
+      "script_url": "",
+      "start_pos": 0,
+      "end_pos": 0,
+      "bytecodes": "LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_13990795907023620448",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/18_function_call/page.html",
+      "start_pos": 0,
+      "end_pos": 144,
+      "bytecodes": "LdaConstant,Star1,Mov,CallRuntime,LdaGlobal,Star1,LdaSmi,Star2,CallUndefinedReceiver1,Star0,Return"
+    },
+    {
+      "function_name": "functionCall",
+      "injected_id": "fn_17962872714610653489",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/18_function_call/page.html",
+      "start_pos": 62,
+      "end_pos": 125,
+      "bytecodes": "LdaGlobal,Star2,CallUndefinedReceiver1,Star0,LdaGlobal,Star2,CallUndefinedReceiver1,Star1,Return"
+    },
+    {
+      "function_name": "double_",
+      "injected_id": "fn_9556368481362540905",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/18_function_call/page.html",
+      "start_pos": 17,
+      "end_pos": 40,
+      "bytecodes": "Ldar,MulSmi,Return"
+    }
+  ],
+  "sm": [
+    {
+      "function_name": "double_",
+      "injected_id": "double_",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/18_function_call/page.html",
+      "script_id": "1",
+      "bytecodes": "GetArg, Int8, Mul, Return, RetRval,"
+    },
+    {
+      "function_name": "functionCall",
+      "injected_id": "functionCall",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/18_function_call/page.html",
+      "script_id": "2",
+      "bytecodes": "GetGName, Undefined, GetArg, Call, SetLocal, Pop, GetGName, Undefined, GetLocal, Call, SetLocal, Pop, GetLocal, Return, RetRval,"
+    }
+  ]
+}

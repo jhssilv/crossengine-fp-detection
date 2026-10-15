@@ -1,0 +1,38 @@
+{
+  "script": "12_comparisons",
+  "v8": [
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_6211134554334037388",
+      "script_url": "",
+      "start_pos": 0,
+      "end_pos": 0,
+      "bytecodes": "LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_10585684227541235120",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/12_comparisons/page.html",
+      "start_pos": 0,
+      "end_pos": 217,
+      "bytecodes": "LdaConstant,Star1,Mov,CallRuntime,LdaGlobal,Star1,LdaSmi,Star2,LdaSmi,Star3,CallUndefinedReceiver2,Star0,Return"
+    },
+    {
+      "function_name": "comparisons",
+      "injected_id": "fn_10027305197083594293",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/12_comparisons/page.html",
+      "start_pos": 21,
+      "end_pos": 196,
+      "bytecodes": "Ldar,TestEqual,Star0,Ldar,TestEqualStrict,Star1,Ldar,TestLessThan,Star2,Ldar,TestGreaterThan,Star3,Ldar,TestLessThanOrEqual,Star4,Ldar,TestGreaterThanOrEqual,Star5,Ldar,JumpIfToBooleanTrue,Ldar,JumpIfToBooleanTrue,Ldar,JumpIfToBooleanTrue,Ldar,JumpIfToBooleanTrue,Ldar,JumpIfToBooleanTrue,Ldar,Return"
+    }
+  ],
+  "sm": [
+    {
+      "function_name": "comparisons",
+      "injected_id": "comparisons",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/12_comparisons/page.html",
+      "script_id": "1",
+      "bytecodes": "GetArg, GetArg, Eq, SetLocal, Pop, GetArg, GetArg, StrictEq, SetLocal, Pop, GetArg, GetArg, Lt, SetLocal, Pop, GetArg, GetArg, Gt, SetLocal, Pop, GetArg, GetArg, Le, SetLocal, Pop, GetArg, GetArg, Ge, SetLocal, Pop, GetLocal, Or, JumpTarget, Pop, GetLocal, Or, JumpTarget, Pop, GetLocal, Or, JumpTarget, Pop, GetLocal, Or, JumpTarget, Pop, GetLocal, Or, JumpTarget, Pop, GetLocal, JumpTarget, Return, RetRval,"
+    }
+  ]
+}

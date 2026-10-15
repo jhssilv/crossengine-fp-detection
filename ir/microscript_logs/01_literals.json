@@ -1,0 +1,278 @@
+{
+  "script": "01_literals",
+  "v8": [
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_6211134554334037388",
+      "script_url": "",
+      "start_pos": 0,
+      "end_pos": 0,
+      "bytecodes": "LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_13145271409551598308",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/01_literals/page.html",
+      "start_pos": 0,
+      "end_pos": 172,
+      "bytecodes": "LdaConstant,Star1,Mov,CallRuntime,LdaGlobal,Star1,CallUndefinedReceiver0,Star0,Return"
+    },
+    {
+      "function_name": "literals",
+      "injected_id": "fn_5591004934163738611",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/01_literals/page.html",
+      "start_pos": 18,
+      "end_pos": 158,
+      "bytecodes": "LdaSmi,Star0,LdaConstant,Star1,LdaConstant,Star2,LdaTrue,Star3,LdaFalse,Star4,LdaNull,Star5,LdaUndefined,Star6,Ldar,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_16532051084076320427",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/extension.js",
+      "start_pos": 0,
+      "end_pos": 7388,
+      "bytecodes": "SwitchOnGeneratorState,Mov,Mov,InvokeIntrinsic,Star0,SuspendGenerator,ResumeGenerator,Star2,InvokeIntrinsic,SwitchOnSmiNoFeedback,Ldar,Throw,Ldar,Return,LdaGlobal,Star3,GetNamedProperty,Star3,GetNamedProperty,Star3,GetNamedProperty,Star2,CreateClosure,Star4,CallProperty1,LdaGlobalInsideTypeof,TestTypeOf,LogicalNot,JumpIfFalse,LdaGlobal,Star3,GetNamedProperty,Star2,LdaConstant,Star4,CallProperty1,Star1,JumpIfToBooleanFalse,LdaGlobal,Star2,GetNamedProperty,Star2,CreateObjectLiteral,Star3,LdaGlobal,Star4,GetNamedProperty,Star4,GetNamedProperty,Star4,GetNamedProperty,DefineNamedOwnProperty,Ldar,SetNamedProperty,LdaGlobal,Star3,GetNamedProperty,Star3,GetNamedProperty,Star3,GetNamedProperty,Star2,CreateClosure,Star4,CallProperty1,LdaGlobal,Star3,GetNamedProperty,Star3,GetNamedProperty,Star3,GetNamedProperty,Star2,CreateClosure,Star4,CallProperty1,LdaNull,StaCurrentContextSlotNoCell,CreateObjectLiteral,StaCurrentContextSlotNoCell,LdaGlobal,Star3,GetNamedProperty,Star3,GetNamedProperty,Star2,LdaModuleVariable,ThrowReferenceErrorIfHole,Star4,GetNamedProperty,Star4,CallProperty1,StaCurrentContextSlotNoCell,LdaCurrentContextSlotNoCell,Star3,GetNamedProperty,Star3,GetNamedProperty,Star2,CreateClosure,Star4,CallProperty1,LdaCurrentContextSlotNoCell,Star3,GetNamedProperty,Star3,GetNamedProperty,Star2,CreateClosure,Star4,CallProperty1,LdaCurrentContextSlotNoCell,Star3,GetNamedProperty,Star2,CreateObjectLiteral,Star4,CallProperty1,LdaModuleVariable,ThrowReferenceErrorIfHole,Star3,GetNamedProperty,Star2,LdaConstant,Star4,CreateClosure,Star5,CallProperty2,LdaGlobal,Star3,GetNamedProperty,Star3,GetNamedProperty,Star2,CreateClosure,Star4,CallProperty1,LdaModuleVariable,ThrowReferenceErrorIfHole,Star3,GetNamedProperty,Star2,CallProperty0,LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_3923818893519172178",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/include/bus.js",
+      "start_pos": 0,
+      "end_pos": 111,
+      "bytecodes": "SwitchOnGeneratorState,LdaConstant,Star1,Mov,CallRuntime,Mov,Mov,InvokeIntrinsic,Star0,SuspendGenerator,ResumeGenerator,Star1,InvokeIntrinsic,SwitchOnSmiNoFeedback,Ldar,Throw,Ldar,Return,LdaGlobal,Star1,LdaConstant,Star2,Ldar,Construct,StaModuleVariable,LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_186209875963219678",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/include/constants.js",
+      "start_pos": 0,
+      "end_pos": 1902,
+      "bytecodes": "SwitchOnGeneratorState,LdaConstant,Star3,Mov,CallRuntime,Mov,Mov,InvokeIntrinsic,Star0,SuspendGenerator,ResumeGenerator,Star3,InvokeIntrinsic,SwitchOnSmiNoFeedback,Ldar,Throw,Ldar,Return,CreateArrayLiteral,Star1,CreateObjectLiteral,Star3,LdaGlobal,Star4,GetNamedProperty,Star4,GetNamedProperty,DefineNamedOwnProperty,LdaZero,GetKeyedProperty,DefineNamedOwnProperty,Ldar,DefineNamedOwnProperty,LdaZero,GetKeyedProperty,Star4,LdaConstant,Add,DefineNamedOwnProperty,Mov,Ldar,StaModuleVariable,LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_4505585766820802433",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/include/integration.js",
+      "start_pos": 0,
+      "end_pos": 4130,
+      "bytecodes": "SwitchOnGeneratorState,LdaConstant,Star2,Mov,CallRuntime,Mov,Mov,InvokeIntrinsic,Star0,SuspendGenerator,ResumeGenerator,Star2,InvokeIntrinsic,SwitchOnSmiNoFeedback,Ldar,Throw,Ldar,Return,CreateClosure,Star2,CallUndefinedReceiver0,Star1,StaModuleVariable,LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_14463370977195612776",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/include/integration.js",
+      "start_pos": 147,
+      "end_pos": 4096,
+      "bytecodes": "CreateFunctionContext,PushContext,CreateClosure,StaCurrentContextSlotNoCell,CreateClosure,StaCurrentContextSlotNoCell,LdaGlobal,Star2,CreateClosure,Star3,Ldar,Construct,Star2,GetNamedProperty,Star1,CreateClosure,Star3,CallProperty1,StaCurrentContextSlotNoCell,LdaGlobal,Star1,CreateClosure,Star2,Ldar,Construct,StaCurrentContextSlotNoCell,CreateObjectLiteral,Star1,CreateClosure,DefineNamedOwnProperty,LdaImmutableCurrentContextSlot,DefineNamedOwnProperty,CreateClosure,DefineNamedOwnProperty,CreateClosure,DefineNamedOwnProperty,CreateClosure,DefineNamedOwnProperty,Ldar,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_472563247363476409",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/include/sync.js",
+      "start_pos": 0,
+      "end_pos": 13533,
+      "bytecodes": "SwitchOnGeneratorState,LdaConstant,Star2,Mov,CallRuntime,Mov,Mov,InvokeIntrinsic,Star0,SuspendGenerator,ResumeGenerator,Star2,InvokeIntrinsic,SwitchOnSmiNoFeedback,Ldar,Throw,Ldar,Return,CreateClosure,Star2,CallUndefinedReceiver0,Star1,StaModuleVariable,LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_4289366807763839567",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/include/sync.js",
+      "start_pos": 322,
+      "end_pos": 13499,
+      "bytecodes": "CreateFunctionContext,PushContext,CreateClosure,Star1,CreateClosure,StaCurrentContextSlotNoCell,CreateClosure,StaCurrentContextSlotNoCell,CreateClosure,StaCurrentContextSlotNoCell,CreateClosure,StaCurrentContextSlotNoCell,CreateClosure,StaCurrentContextSlotNoCell,CreateClosure,Star2,CreateClosure,StaCurrentContextSlotNoCell,CreateClosure,StaCurrentContextSlotNoCell,CreateClosure,StaCurrentContextSlotNoCell,LdaTrue,StaCurrentContextSlotNoCell,LdaFalse,StaCurrentContextSlotNoCell,CreateEmptyObjectLiteral,StaCurrentContextSlotNoCell,LdaSmi,Star0,CreateObjectLiteral,Star4,Ldar,DefineNamedOwnProperty,LdaImmutableCurrentContextSlot,DefineNamedOwnProperty,Ldar,DefineNamedOwnProperty,Ldar,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_11553909320126407374",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/include/toolbar.js",
+      "start_pos": 0,
+      "end_pos": 1315,
+      "bytecodes": "SwitchOnGeneratorState,LdaConstant,Star2,Mov,CallRuntime,Mov,Mov,InvokeIntrinsic,Star0,SuspendGenerator,ResumeGenerator,Star2,InvokeIntrinsic,SwitchOnSmiNoFeedback,Ldar,Throw,Ldar,Return,CreateClosure,Star2,CallUndefinedReceiver0,Star1,StaModuleVariable,LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_14818677040783447034",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/include/toolbar.js",
+      "start_pos": 161,
+      "end_pos": 1285,
+      "bytecodes": "CreateFunctionContextWithCells,PushContext,CreateClosure,Star0,CreateClosure,StaCurrentContextSlotNoCell,CreateClosure,StaCurrentContextSlotNoCell,CreateObjectLiteral,Star2,Ldar,DefineNamedOwnProperty,Ldar,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_3214135317847078029",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/include/i18n.js",
+      "start_pos": 0,
+      "end_pos": 808,
+      "bytecodes": "SwitchOnGeneratorState,LdaConstant,Star1,Mov,CallRuntime,Mov,Mov,InvokeIntrinsic,Star0,SuspendGenerator,ResumeGenerator,Star1,InvokeIntrinsic,SwitchOnSmiNoFeedback,Ldar,Throw,Ldar,Return,LdaGlobal,Star1,GetNamedProperty,Star1,GetNamedProperty,StaModuleVariable,CreateClosure,StaModuleVariable,LdaUndefined,Return"
+    },
+    {
+      "function_name": "i18n",
+      "injected_id": "fn_6198202728252204784",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/include/i18n.js",
+      "start_pos": 127,
+      "end_pos": 784,
+      "bytecodes": "LdaModuleVariable,ThrowReferenceErrorIfHole,Star1,LdaConstant,Star2,CallUndefinedReceiver1,Star1,GetNamedProperty,Star0,CreateClosure,Star2,CallProperty1,LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_2396956520007353660",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/include/notifications.js",
+      "start_pos": 0,
+      "end_pos": 2331,
+      "bytecodes": "SwitchOnGeneratorState,LdaConstant,Star2,Mov,CallRuntime,Mov,Mov,InvokeIntrinsic,Star0,SuspendGenerator,ResumeGenerator,Star2,InvokeIntrinsic,SwitchOnSmiNoFeedback,Ldar,Throw,Ldar,Return,CreateClosure,Star2,CallUndefinedReceiver0,Star1,StaModuleVariable,LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_16684394024954564205",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/include/notifications.js",
+      "start_pos": 181,
+      "end_pos": 2295,
+      "bytecodes": "CreateFunctionContext,PushContext,CreateClosure,Star0,CreateClosure,StaCurrentContextSlotNoCell,CreateObjectLiteral,Star2,LdaGlobal,Star3,GetNamedProperty,Star3,GetNamedProperty,Star3,GetNamedProperty,DefineNamedOwnProperty,LdaModuleVariable,ThrowReferenceErrorIfHole,Star3,LdaConstant,Star4,CallUndefinedReceiver1,DefineNamedOwnProperty,CreateArrayLiteral,Star3,LdaZero,Star4,CreateObjectLiteral,Star5,LdaModuleVariable,Star6,LdaConstant,Star7,CallUndefinedReceiver1,DefineNamedOwnProperty,Ldar,StaInArrayLiteral,Ldar,DefineNamedOwnProperty,Ldar,StaCurrentContextSlotNoCell,CreateClosure,Star2,CallUndefinedReceiver0,StaCurrentContextSlotNoCell,CreateObjectLiteral,Star2,CreateClosure,DefineNamedOwnProperty,Ldar,DefineNamedOwnProperty,Ldar,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_12200671086689046569",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/include/notifications.js",
+      "start_pos": 1388,
+      "end_pos": 1966,
+      "bytecodes": "CreateClosure,Star0,CreateClosure,Star1,CreateObjectLiteral,Star2,Ldar,DefineNamedOwnProperty,Ldar,DefineNamedOwnProperty,Ldar,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_13211043247731799346",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/include/dom.js",
+      "start_pos": 0,
+      "end_pos": 180,
+      "bytecodes": "SwitchOnGeneratorState,LdaConstant,Star1,Mov,CallRuntime,Mov,Mov,InvokeIntrinsic,Star0,SuspendGenerator,ResumeGenerator,Star1,InvokeIntrinsic,SwitchOnSmiNoFeedback,Ldar,Throw,Ldar,Return,CreateClosure,StaModuleVariable,CreateClosure,StaModuleVariable,LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_15658309720171557024",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/include/integration.js",
+      "start_pos": 189,
+      "end_pos": 456,
+      "bytecodes": "CreateFunctionContextWithCells,PushContext,Ldar,StaCurrentContextSlotNoCell,Ldar,StaCurrentContextSlotNoCell,LdaGlobal,Star2,GetNamedProperty,Star2,GetNamedProperty,Star1,CreateClosure,Star3,CallProperty1,LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_8544448037409715025",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/include/integration.js",
+      "start_pos": 512,
+      "end_pos": 785,
+      "bytecodes": "CreateFunctionContextWithCells,PushContext,Ldar,StaCurrentContextSlotNoCell,Ldar,StaCurrentContextSlotNoCell,LdaImmutableContextSlot,Star1,CreateObjectLiteral,Star2,CreateClosure,Star3,CallUndefinedReceiver2,LdaUndefined,Return"
+    },
+    {
+      "function_name": "sendNativeRequest",
+      "injected_id": "fn_890050552638869039",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/include/integration.js",
+      "start_pos": 819,
+      "end_pos": 2576,
+      "bytecodes": "CreateFunctionContextWithCells,PushContext,Ldar,StaCurrentContextSlotNoCell,Ldar,StaCurrentContextSlotNoCell,LdaImmutableContextSlot,Star2,GetNamedProperty,Star1,CreateClosure,Star3,CreateClosure,Star4,CallProperty2,LdaUndefined,Return"
+    },
+    {
+      "function_name": "init",
+      "injected_id": "fn_16044754490172714357",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/include/toolbar.js",
+      "start_pos": 229,
+      "end_pos": 774,
+      "bytecodes": "LdaGlobal,Star1,GetNamedProperty,Star1,GetNamedProperty,Star1,GetNamedProperty,Star0,LdaModuleVariable,ThrowReferenceErrorIfHole,Star2,GetNamedProperty,Star2,CreateClosure,Star3,CallProperty2,LdaGlobal,Star1,GetNamedProperty,Star1,GetNamedProperty,Star1,GetNamedProperty,Star0,CreateClosure,Star2,CallProperty1,LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_18155647600418528689",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/include/integration.js",
+      "start_pos": 257,
+      "end_pos": 448,
+      "bytecodes": "LdaModuleVariable,ThrowReferenceErrorIfHole,Star1,GetNamedProperty,Star1,GetNamedProperty,Star0,GetNamedProperty,Star2,CallProperty1,Star0,LdaSmi,TestEqualStrict,JumpIfFalse,LdaImmutableCurrentContextSlot,Star0,CallUndefinedReceiver0,Jump,LdaImmutableCurrentContextSlot,Star0,CallUndefinedReceiver0,LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_17304248156729828196",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/extension.js",
+      "start_pos": 7259,
+      "end_pos": 7368,
+      "bytecodes": "LdaModuleVariable,ThrowReferenceErrorIfHole,Star1,GetNamedProperty,Star1,GetNamedProperty,Star0,GetNamedProperty,Star2,CallProperty1,Star0,LdaSmi,TestEqualStrict,JumpIfTrue,LdaModuleVariable,ThrowReferenceErrorIfHole,Star1,GetNamedProperty,Star0,CallProperty0,LdaUndefined,Return"
+    },
+    {
+      "function_name": "init",
+      "injected_id": "fn_17263889053696446786",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/include/sync.js",
+      "start_pos": 531,
+      "end_pos": 3596,
+      "bytecodes": "CreateFunctionContextWithCells,PushContext,CreateClosure,StaCurrentContextSlotNoCell,CreateClosure,StaCurrentContextSlotNoCell,LdaGlobal,Star2,GetNamedProperty,Star2,GetNamedProperty,Star1,CreateObjectLiteral,Star3,CreateClosure,Star4,CallProperty2,LdaGlobal,Star2,GetNamedProperty,Star2,GetNamedProperty,Star2,GetNamedProperty,Star1,CreateClosure,Star3,CallProperty1,LdaGlobal,Star2,GetNamedProperty,Star2,GetNamedProperty,Star2,GetNamedProperty,Star1,CreateClosure,Star3,CallProperty1,LdaImmutableContextSlot,Star1,CallUndefinedReceiver0,LdaGlobal,Star2,GetNamedProperty,Star2,GetNamedProperty,Star2,GetNamedProperty,Star1,CreateClosure,Star3,CallProperty1,LdaGlobal,Star2,GetNamedProperty,Star2,GetNamedProperty,Star2,GetNamedProperty,Star1,CreateClosure,Star3,CallProperty1,LdaModuleVariable,ThrowReferenceErrorIfHole,Star3,GetNamedProperty,Star2,CallProperty0,Star2,GetNamedProperty,Star1,CreateClosure,Star3,CallProperty1,LdaUndefined,Return"
+    },
+    {
+      "function_name": "onSyncFromRemote",
+      "injected_id": "fn_16055021040529593000",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/include/sync.js",
+      "start_pos": 12324,
+      "end_pos": 12456,
+      "bytecodes": "CreateFunctionContextWithCells,PushContext,Ldar,StaCurrentContextSlotNoCell,LdaImmutableContextSlot,Star1,CreateClosure,Star2,CallUndefinedReceiver1,LdaUndefined,Return"
+    },
+    {
+      "function_name": "runIfSyncEnabled",
+      "injected_id": "fn_8574401326881420963",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/include/sync.js",
+      "start_pos": 12613,
+      "end_pos": 13040,
+      "bytecodes": "CreateFunctionContextWithCells,PushContext,Ldar,StaCurrentContextSlotNoCell,LdaGlobal,Star2,GetNamedProperty,Star2,GetNamedProperty,Star2,GetNamedProperty,Star1,CreateObjectLiteral,Star3,CreateClosure,Star4,CallProperty2,LdaUndefined,Return"
+    },
+    {
+      "function_name": "onInitialize",
+      "injected_id": "fn_8504165070842946519",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/include/integration.js",
+      "start_pos": 3908,
+      "end_pos": 3955,
+      "bytecodes": "LdaImmutableCurrentContextSlot,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_17567128180884116876",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/include/integration.js",
+      "start_pos": 873,
+      "end_pos": 2353,
+      "bytecodes": "LdaImmutableCurrentContextSlot,JumpIfToBooleanFalse,LdaGlobal,Star1,GetNamedProperty,Star1,GetNamedProperty,Star0,LdaModuleVariable,ThrowReferenceErrorIfHole,Star2,GetNamedProperty,Star2,LdaImmutableCurrentContextSlot,Star3,CreateClosure,Star4,CallProperty,Jump,LdaGlobal,Star1,GetNamedProperty,Star1,GetNamedProperty,Star0,LdaModuleVariable,ThrowReferenceErrorIfHole,Star2,GetNamedProperty,Star2,LdaImmutableCurrentContextSlot,Star3,CallProperty2,LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_6598432173019042626",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/include/sync.js",
+      "start_pos": 1205,
+      "end_pos": 1407,
+      "bytecodes": "Ldar,JumpIfToBooleanFalse,LdaGlobal,Star1,GetNamedProperty,Star1,GetNamedProperty,Star1,GetNamedProperty,Star0,LdaImmutableCurrentContextSlot,Star2,CallProperty1,Jump,LdaFalse,StaContextSlotNoCell,LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_7065775493518681669",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/include/toolbar.js",
+      "start_pos": 309,
+      "end_pos": 416,
+      "bytecodes": "GetNamedProperty,JumpIfToBooleanFalse,LdaImmutableCurrentContextSlot,Star0,CallUndefinedReceiver0,LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_9689234315207738859",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/include/sync.js",
+      "start_pos": 12715,
+      "end_pos": 13032,
+      "bytecodes": "GetNamedProperty,JumpIfToBooleanFalse,LdaGlobal,Star1,GetNamedProperty,Star1,GetNamedProperty,Star0,CreateObjectLiteral,Star2,CreateClosure,Star3,CallProperty2,LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_17633175781964128546",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/extension.js",
+      "start_pos": 319,
+      "end_pos": 864,
+      "bytecodes": "CreateFunctionContextWithCells,PushContext,LdaGlobal,Star2,GetNamedProperty,Star2,GetNamedProperty,Star1,CallProperty0,Star1,GetNamedProperty,StaCurrentContextSlotNoCell,GetNamedProperty,Star1,LdaGlobal,Star2,GetNamedProperty,Star2,GetNamedProperty,Star2,GetNamedProperty,TestEqual,JumpIfFalse,GetNamedProperty,Star1,LdaImmutableCurrentContextSlot,TestEqual,JumpIfTrue,LdaGlobal,Star2,GetNamedProperty,Star2,GetNamedProperty,Star2,GetNamedProperty,Star1,LdaModuleVariable,ThrowReferenceErrorIfHole,Star3,GetNamedProperty,Star3,CreateClosure,Star4,CallProperty2,LdaUndefined,Return"
+    }
+  ],
+  "sm": [
+    {
+      "function_name": "literals",
+      "injected_id": "literals",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/01_literals/page.html",
+      "script_id": "1",
+      "bytecodes": "Int8, SetLocal, Pop, Double, SetLocal, Pop, String, SetLocal, Pop, True, SetLocal, Pop, False, SetLocal, Pop, Null, SetLocal, Pop, Undefined, SetLocal, Pop, GetLocal, Return, RetRval,"
+    }
+  ]
+}

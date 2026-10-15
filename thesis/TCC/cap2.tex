@@ -1,0 +1,387 @@
+% ============================================================
+%  Capítulo 2 — Fundamentação Teórica e Trabalhos Relacionados
+% ============================================================
+\chapter{FUNDAMENTAÇÃO TEÓRICA E TRABALHOS RELACIONADOS}
+\label{cap:fundamentacao}
+
+\section{Browser fingerprinting}
+\label{sec:fingerprinting}
+
+Browser fingerprinting é a prática de coletar atributos do navegador e do
+dispositivo do usuário para construir um identificador persistente sem o uso de
+mecanismos de armazenamento local como cookies \cite{eckersley2010}. Ao
+contrário dos cookies, um fingerprint não deixa rastros no sistema
+de arquivos do usuário, não pode ser apagado com a limpeza do histórico e persiste
+mesmo em modo de navegação privada. Estudos de larga escala demonstram que a
+combinação de vetores de fingerprinting é suficientemente discriminativa
+para identificar unicamente mais de 99\% dos visitantes de um mesmo site
+\cite{laperdrix2016}.
+
+A coleta de fingerprints ocorre inteiramente em JavaScript, executado
+dentro do processo do navegador. As principais superfícies de ataque são descritas
+a seguir.
+
+\textbf{Canvas.} A API Canvas 2D permite que scripts desenhem formas, texto e
+gradientes em uma área de renderização virtual. Pequenas diferenças na pilha
+gráfica do sistema operacional, motor de renderização, antialiasing, driver de
+GPU, fonte instalada, produzem pixels ligeiramente distintos para o mesmo
+comando de desenho. A extração do conteúdo via \texttt{canvas.toDataURL()} ou
+\texttt{canvas.getImageData()} fornece uma sequência de bytes que varia entre
+dispositivos e navegadores \cite{mowery2012}. A mesma superfície é explorada pela
+font fingerprinting: chamadas a \texttt{canvas.measureText()} com
+diferentes famílias tipográficas revelam quais fontes estão instaladas no sistema.
+
+\textbf{Áudio.} A Web Audio API expõe um grafo de processamento de sinais.
+Scripts de fingerprinting instanciam um \texttt{OscillatorNode}, conectam
+um \texttt{DynamicsCompressorNode} e renderizam o resultado em modo offline.
+As características do sinal resultante, determinadas pela implementação de
+aritmética de ponto flutuante do motor de áudio e pelas configurações do driver de
+áudio, diferem entre plataformas e arquiteturas de CPU \cite{englehardt2016}.
+
+\textbf{WebGL.} A API WebGL expõe parâmetros da GPU via
+\texttt{gl.getParameter()} e \texttt{gl.getSupportedExtensions()}. A combinação de
+modelo de GPU, versão de driver e extensões suportadas forma um vetor altamente
+discriminativo, particularmente em ambientes corporativos onde a diversidade de
+hardware é limitada.
+
+\textbf{WebRTC.} O protocolo WebRTC, destinado à comunicação em tempo real entre
+navegadores, exige a negociação de candidatos ICE (Interactive Connectivity
+Establishment), que incluem endereços IP locais da máquina. Scripts maliciosos
+podem utilizar \texttt{RTCPeerConnection.createOffer()} e
+\texttt{setLocalDescription()} para recuperar o endereço IP local do usuário mesmo
+quando este utiliza uma VPN, tornando o WebRTC um vetor de identificação de rede
+\cite{reiter2017}.
+
+\textbf{Tela e propriedades de navegador.} As dimensões e profundidade de cor da
+tela (\texttt{screen.width}, \texttt{screen.height}, \texttt{screen.colorDepth},
+\texttt{screen.pixelDepth}) são facilmente acessíveis sem qualquer API
+especializada. O objeto \texttt{navigator} expõe propriedades de hardware e
+configuração do sistema: \texttt{hardwareConcurrency} (número de núcleos lógicos),
+\texttt{deviceMemory} (memória RAM em GB, discretizada), \texttt{languages}
+(idiomas configurados), \texttt{platform} e \texttt{maxTouchPoints}. Isoladas,
+essas propriedades têm baixa entropia; combinadas com outros vetores, contribuem
+significativamente para a unicidade do fingerprint \cite{laperdrix2016}.
+
+\textbf{Sensores e APIs emergentes.} Em dispositivos móveis, APIs como
+\texttt{DeviceMotionEvent}, \texttt{DeviceOrientationEvent} e \texttt{Gyroscope}
+expõem dados de sensores físicos que podem ser utilizados para
+fingerprinting mesmo sem permissão explícita do usuário \cite{das2018}.
+Embora menos relevantes para a configuração de desktop estudada neste
+trabalho, esses vetores exemplificam a tendência de expansão contínua da superfície
+de fingerprinting à medida que novas APIs são adicionadas aos padrões web.
+
+A presença de bibliotecas de fingerprinting de código aberto, FingerprintJS, CreepJS e variantes, nos mil sites mais populares da web indica
+que o rastreamento por fingerprint é amplamente adotado na prática. Essas
+bibliotecas empacotam os vetores descritos acima em funções JavaScript que executam
+silenciosamente durante o carregamento da página, sem interação ou consentimento do
+usuário.
+
+%, , , , , , , , , , , , , , , , , , , --
+\section{Arquitetura dos motores JavaScript}
+\label{sec:motores}
+
+Motores JavaScript modernos compilam código-fonte para uma representação em
+bytecode que é interpretada por uma máquina virtual, com caminhos de compilação JIT
+(just-in-time) para funções de alta frequência. As duas implementações mais
+utilizadas em navegadores de desktop, V8 (Google) e SpiderMonkey (Mozilla)
+compartilham esse modelo geral, mas diferem substancialmente em sua arquitetura
+interna, o que resulta em sequências de bytecodes distintas para o mesmo código
+JavaScript.
+
+\subsection{V8 e o interpretador Ignition}
+\label{sub:v8}
+
+O V8 é o motor JavaScript do Chromium e do Node.js. Seu pipeline de compilação
+opera em três estágios principais. O analisador sintático converte o código-fonte
+em uma árvore sintática abstrata (AST). O gerador de bytecodes Ignition percorre a
+AST e emite sequências de instrução para uma máquina de registradores virtual com
+acumulador implícito. O compilador otimizador TurboFan monitora, em tempo de
+execução, as funções mais frequentemente executadas e recompila seletivamente as
+hot functions para código de máquina nativo.
+
+O conjunto de instruções do Ignition inclui operações de carga e armazenamento em
+registradores (\texttt{Lda*}, \texttt{Sta*}), operações aritméticas e de
+comparação, chamadas de função (\texttt{Call*}, \texttt{Invoke*}), acesso a
+propriedades (\texttt{GetNamedProperty}, \texttt{GetKeyedProperty}), controle de
+fluxo (\texttt{Jump*}) e operações de closure e contexto (\texttt{CreateClosure},
+\texttt{LdaContextSlot}). Cada instrução é acompanhada de metadados de
+feedback utilizados pelo TurboFan para inferência de tipos.
+
+A instrumentação deste trabalho é inserida na função \texttt{DoFinalizeJobImpl} do
+arquivo \path{interpreter.cc}, que é invocada ao final da compilação de cada
+função. Nesse ponto, a sequência completa de bytecodes da função está disponível e
+pode ser emitida para o stderr junto com metadados de identificação: URL do
+script, posições de início e fim no código-fonte, e nome da função.
+
+\subsection{SpiderMonkey}
+\label{sub:spidermonkey}
+
+O SpiderMonkey é o motor JavaScript do Firefox. Seu pipeline segue uma arquitetura
+semelhante, análise sintática, geração de bytecodes, interpretação e compilação
+JIT, mas difere do V8 em aspectos relevantes para este trabalho.
+
+O formato de bytecodes do SpiderMonkey é baseado em pilha (stack-based), ao
+contrário do formato orientado a registradores do Ignition. Isso implica que
+operações que o V8 codifica em uma única instrução de três endereços frequentemente
+correspondem a sequências de instruções de empilhamento e desempilhamento no
+SpiderMonkey. Por exemplo, a leitura de uma propriedade nomeada em V8 emite
+\texttt{GetNamedProperty} com dois operandos explícitos, enquanto o SpiderMonkey
+emite \texttt{GetProp} precedido de uma instrução de carga do objeto receptor.
+
+Adicionalmente, o SpiderMonkey utiliza estratégias distintas de alocação de
+registradores, inlining de funções e representação de closures. A consequência
+prática é que mesmo após a abstração dos opcodes para uma representação
+intermediária compartilhada (descrita no Capítulo~\ref{cap:ir}), as distribuições
+de n-gramas de IR geradas por ambos os motores para o mesmo código JavaScript
+diferem estruturalmente, fato que motiva a necessidade de treinamento conjunto
+documentada no Capítulo~\ref{cap:experimentos}.
+
+A instrumentação do SpiderMonkey neste trabalho emite blocos de múltiplas linhas
+para o stderr com um prefixo identificável (\texttt{[SpiderMonkey Log]}),
+capturados via log do geckodriver. Para funções anônimas, que representam a
+maioria das funções de fingerprinting em bundles minificados, um identificador único é injetado como \texttt{displayName} da função,
+propagando-se para \texttt{Error.stack} e permitindo o join com as chamadas
+de API sem perda de dados.
+
+%, , , , , , , , , , , , , , , , , , , --
+\section{ByteDefender: abordagem, resultados e limitações}
+\label{sec:bytedefender}
+
+ByteDefender \cite{nikkhahbahrami2025} é a referência mais diretamente relacionada
+ao presente trabalho. Ele demonstrou pela primeira vez que sequências de bytecodes do
+V8 são discriminativas o suficiente para detectar funções de fingerprinting
+a nível de função com alta precisão, sem acesso ao código-fonte original.
+
+\textbf{Abordagem.} O ByteDefender instrumenta o motor V8 para capturar as
+sequências de bytecodes produzidas por cada função compilada. As sequências são
+representadas como bag-of-ngrams de opcodes e utilizadas como entrada para
+um classificador baseado em Transformer. O treinamento é supervisionado com rótulos
+derivados de heurísticas de correspondência entre chamadas de APIs de
+fingerprinting (obtidas por instrumentação de APIs em nível de JavaScript) e
+as funções que as invocaram.
+
+\textbf{Resultados.} O ByteDefender reportou F1 $\approx 0{,}95$ na detecção
+binária de funções de fingerprinting sobre um corpus de sites da web
+visitados com o Chromium.
+
+\textbf{Limitações.} O ByteDefender opera exclusivamente sobre bytecodes do V8.
+Modelos treinados sobre bytecodes brutos do V8 não são diretamente aplicáveis ao
+SpiderMonkey: os conjuntos de opcodes são disjuntos entre os dois motores, e não
+existe mapeamento automático entre eles. A adição de suporte a um novo motor requer
+a coleta de um novo corpus de bytecodes, a adaptação do pipeline de dados e o
+retreinamento completo do modelo, uma barreira de engenharia não trivial.
+
+Este trabalho estende o ByteDefender em três dimensões: (1) adiciona instrumentação
+do SpiderMonkey com rastreamento de funções anônimas; (2) projeta uma representação
+intermediária que unifica os vocabulários de bytecodes de ambos os motores; e (3)
+demonstra que um único modelo treinado conjuntamente sobre essa representação
+generaliza para ambos os motores sem retreinamento, ao custo de aproximadamente 5
+pontos de F1 em relação à abordagem de motor único (F1~=~0,904 vs.\
+$\approx$0,950), custo que inclui também a inclusão de funções anônimas, um
+espaço de rótulos mais amplo e a ausência de metadados de nome de função.
+
+%, , , , , , , , , , , , , , , , , , , --
+\section{NLP aplicado a código: TF-IDF, embeddings e representações intermediárias}
+\label{sec:nlp}
+
+O tratamento de sequências de bytecodes como texto é a ponte conceitual entre
+compilação e aprendizado de máquina. Esta seção descreve as técnicas de
+representação e classificação utilizadas no trabalho.
+
+\subsection{TF-IDF}
+\label{sub:tfidf}
+
+TF-IDF (term frequency--inverse document frequency) é um esquema de
+ponderação clássico para representação de documentos em espaços vetoriais
+\cite{manning2008}. Dado um corpus de documentos, o peso de um termo $t$ em um
+documento $d$ é o produto da frequência do termo no documento
+($\text{tf}(t,d)$) pelo logaritmo inverso da proporção de documentos que contêm o
+termo ($\text{idf}(t)$). Termos ubíquos recebem peso baixo; termos discriminativos
+recebem peso alto.
+
+Neste trabalho, cada função JavaScript é tratada como um documento e cada token de
+RI (ou n-grama de tokens) como um termo. A representação TF-IDF de unigrams produz
+vetores de 136 dimensões; a de bigrams, 4.723; a de trigrams, 50.631. A
+escalabilidade do TF-IDF a conjuntos de features muito maiores que o vocabulário de
+entrada, por conta da esparsidade das representações em bag-of-ngrams, é uma de suas vantagens práticas sobre embeddings densos no cenário de vocabulário
+fechado de 145 tokens estudado neste trabalho.
+
+\subsection{Word2Vec e FastText}
+\label{sub:embeddings}
+
+Word2Vec \cite{mikolov2013} introduziu o aprendizado de representações distribuídas
+de palavras por predição de contexto, utilizando as arquiteturas CBOW
+(Continuous Bag of Words) e Skip-gram. Dada uma sequência de tokens,
+o modelo Skip-gram aprende vetores de forma que tokens com contextos
+similares sejam próximos no espaço vetorial.
+
+FastText \cite{bojanowski2017} estende o Word2Vec ao decompor cada palavra em
+n-gramas de caracteres, somando seus vetores para compor a representação final.
+Isso permite representar palavras fora do vocabulário, uma vantagem em corpora
+de código com identificadores raros. Para o vocabulário fechado de 145 tokens deste
+trabalho, FastText é utilizado em modo Skip-gram com subsampling de
+frequência desativado ($t = 0{,}0$), pois qualquer subsampling eliminaria
+completamente o sinal de treinamento com um vocabulário de apenas 145 tokens. Os
+vetores resultantes são avaliados como features de classificadores sequenciais no
+Capítulo~\ref{cap:experimentos}.
+
+\subsection{Random Forest e LightGBM}
+\label{sub:rf-lgbm}
+
+Random Forest \cite{breiman2001} é um método de ensemble que treina múltiplas
+árvores de decisão sobre subamostras aleatórias do conjunto de treinamento e de
+features, agregando as predições por votação ou média de probabilidades. A
+estratégia \texttt{balanced\_subsample} reamostra cada árvore para balancear as
+classes, o que confere robustez natural a classes raras, propriedade relevante
+para o cenário multilabel estudado no Capítulo~\ref{cap:experimentos}, onde
+categorias como WebRTC e Fonte têm apenas dezenas de exemplos positivos.
+
+LightGBM \cite{ke2017} é uma implementação de Gradient Boosted Decision
+Trees (GBDT) baseada em histogram-based splitting e leaf-wise tree
+growth. Sua eficiência computacional com features esparsas de alta dimensionalidade
+como os vetores TF-IDF de bigrams (4.723 features) e trigrams (50.631 features)
+utilizados neste trabalho, torna-o adequado para conjuntos de dados de escala
+industrial. LightGBM inclui o parâmetro \texttt{is\_unbalance}, que ajusta
+automaticamente os pesos de classe na função de perda para lidar com
+desbalanceamento.
+
+\subsection{SVM com SGD e calibração de probabilidades}
+\label{sub:svm-fund}
+
+Máquinas de Vetores de Suporte (SVM) buscam o hiperplano que maximiza a margem
+de separação entre classes no espaço de features. Para representações esparsas
+de alta dimensão como os vetores TF-IDF de bigrams utilizados neste trabalho,
+o treinamento via gradiente estocástico (\textit{Stochastic Gradient Descent},
+SGD) com perda de dobradiça (\textit{hinge loss}) é computacionalmente
+eficiente, com complexidade linear no número de amostras \cite{manning2008}.
+O SVM com SGD produz pontuações de margem, não probabilidades; a conversão
+para probabilidades necessária ao ajuste de limiar é feita por calibração de
+Platt (\texttt{CalibratedClassifierCV}), que aplica regressão logística sobre
+as pontuações de margem em validação cruzada interna.
+
+\subsection{BiLSTM}
+\label{sub:bilstm-fund}
+
+Redes de Memória de Longo Prazo Bidirecional (\textit{Bidirectional Long
+Short-Term Memory}, BiLSTM) processam sequências em ambas as direções, direta
+e reversa, produzindo para cada posição uma representação que capta contexto
+anterior e posterior. Uma BiLSTM empilha dois RNNs: uma camada que percorre a
+sequência da esquerda para a direita e uma camada reversa; as saídas são
+concatenadas posição a posição. A representação da sequência completa é obtida
+por \textit{pooling} sobre os vetores de saída; neste trabalho utiliza-se
+\textit{mean+max pooling}, que concatena a média e o máximo elemento a elemento
+ao longo da dimensão temporal, capturando tanto a distribuição central quanto
+os picos de ativação mais informativos da sequência de tokens de RI.
+
+\subsection{Transformers}
+\label{sub:transformers}
+
+A arquitetura Transformer \cite{vaswani2017} introduziu o mecanismo de
+auto-atenção (self-attention), que pondera cada elemento de uma sequência em
+função de todos os demais, capturando dependências de longo alcance sem recorrência.
+O bloco básico do Transformer empilha camadas de atenção multi-cabeça seguidas de
+redes feedforward posição a posição, com normalização de camada e conexões
+residuais. Desde sua proposição, a arquitetura se tornou o padrão dominante em
+tarefas de processamento de linguagem natural e, progressivamente, em classificação
+de código-fonte.
+
+Neste trabalho, um classificador Transformer de pequeno porte é avaliado em duas
+configurações: com embeddings FastText fixos e com embeddings iniciados aleatoriamente
+e treinados conjuntamente com o classificador. Os resultados e a comparação com os
+classificadores baseados em TF-IDF estão no Capítulo~\ref{cap:experimentos}.
+
+\subsection{Representações intermediárias em compiladores}
+\label{sub:ri-compiladores}
+
+O conceito de representação intermediária (RI) é central na teoria de compiladores:
+uma RI é uma forma de programa independente da linguagem de entrada e da
+arquitetura-alvo, sobre a qual transformações e análises podem ser aplicadas de
+forma genérica \cite{aho2006}. O exemplo mais influente na prática é o LLVM IR
+\cite{lattner2004}, uma representação em forma SSA (static single
+assignment) que permite que front-ends de múltiplas linguagens e
+back-ends de múltiplas arquiteturas compartilhem um mesmo conjunto de
+otimizações.
+
+Este trabalho adota um princípio análogo ao nível dos bytecodes: em vez de operar
+sobre os conjuntos de opcodes proprietários do V8 e do SpiderMonkey, projeta-se uma
+RI específica para fingerprinting que abstrai diferenças de implementação
+entre os dois motores, preservando as distinções semânticas relevantes para a
+tarefa de classificação. A RI não é gerada automaticamente por um compilador, mas
+construída empiricamente por meio de micro-scripts que exercitam construções
+JavaScript relevantes e do alinhamento manual e estatístico das sequências de
+bytecodes produzidas por ambos os motores (detalhado no Capítulo~\ref{cap:ir}).
+
+%, , , , , , , , , , , , , , , , , , , --
+\section{Trabalhos relacionados}
+\label{sec:relacionados}
+
+Esta seção posiciona o presente trabalho no contexto da literatura existente sobre
+detecção de fingerprinting e análise de JavaScript.
+
+\textbf{Detecção comportamental de fingerprinting.} \citeonline{iqbal2021}
+propõem o FP-Inspector, um sistema que combina análise estática de JavaScript com
+aprendizado de máquina para detectar scripts de fingerprinting a nível de
+script (não de função). O trabalho usa features extraídas da AST e do fluxo de
+controle, atingindo alta precisão na classificação de scripts completos, mas sem
+granularidade funcional. Nossa abordagem opera no nível de função individual e usa
+bytecodes em vez de código-fonte, tornando-a robusta à ofuscação.
+
+\textbf{Detecção de JavaScript de rastreamento por bytecodes.} O trabalho mais
+próximo do nosso em metodologia é apresentado por \citeonline{ghasemisharif2023} em
+``Read Between the Lines: Detecting Tracking JavaScript with Bytecode
+Classification''. Os autores utilizam bytecodes do V8 para classificar scripts de
+rastreamento (tracking), mostrando que a representação em bytecodes é
+discriminativa mesmo quando o código-fonte é ofuscado. Diferimos desse trabalho em
+dois aspectos principais: operamos no nível de função (granularidade mais fina), e
+introduzimos uma RI que permite a generalização cross-engine.
+
+\textbf{Fingerprinting de canvas.} \citeonline{mowery2012} em
+``Pixel Perfect: Fingerprinting Canvas in HTML5'' descrevem detalhadamente
+o vetor Canvas e demonstram sua eficácia para identificação única de navegadores.
+Este trabalho é diretamente relevante para a categoria Canvas do nosso classificador
+multilabel.
+
+\textbf{WebRTC como vetor de identificação.} \citeonline{reiter2017} documentam em
+``WebRTC: Your Privacy is at Risk'' o mecanismo pelo qual candidatos ICE
+expõem IPs locais, constituindo o vetor WebRTC da nossa taxonomia de
+fingerprinting.
+
+\textbf{Sensores em dispositivos móveis.} \citeonline{das2018} em ``The
+Web's Sixth Sense: A Study of Scripts Accessing Smartphone Sensors'' estudam o
+acesso não autorizado a sensores físicos por scripts web. O trabalho demonstra que
+APIs de sensor são exploradas para fingerprinting em dispositivos móveis,
+expandindo a superfície de rastreamento além dos vetores clássicos.
+
+\textbf{ByteDefender.} \citeonline{nikkhahbahrami2025} em ``Byte by Byte:
+Unmasking Browser Fingerprinting at the Function Level Using V8 Bytecode
+Transformers'' são o trabalho de referência direta para o presente trabalho
+(detalhado na Seção~\ref{sec:bytedefender}).
+
+A Tabela~\ref{tab:relacionados} compara as abordagens mais relevantes.
+
+\begin{table}[htb]
+\centering
+\caption{Posicionamento comparativo dos trabalhos relacionados}
+\label{tab:relacionados}
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}X l l >{\raggedright\arraybackslash}X r}
+\toprule
+\textbf{Trabalho} & \textbf{Nível} & \textbf{Motor(es)} & \textbf{Features} & \textbf{F1 (binário)} \\
+\midrule
+FP-Inspector \cite{iqbal2021}            & Script  & N/A (AST) & AST + fluxo de controle  & $0{,}935$ \\
+Read Between the Lines \cite{ghasemisharif2023} & Script & V8 & Bytecodes brutos & $0{,}944$--$0{,}956$$\ddagger$ \\
+ByteDefender \cite{nikkhahbahrami2025}   & Função  & V8        & Bytecodes brutos V8      & $\approx 0{,}950$ \\
+\textbf{Este trabalho}                   & \textbf{Função} & \textbf{V8 + SM} & \textbf{RI cross-engine (145 tokens, 136 ativos)} & \textbf{0,853 / 0,904$\dagger$} \\
+\bottomrule
+\end{tabularx}
+{\footnotesize $\dagger$ 0,853: melhor modelo de bytecodes puros (LightGBM + bigramas + densidade de script).
+0,904: modelo implantável com inferência iterativa, sem rótulos externos.
+$\ddagger$ Três variantes reportadas: RF + Word2Vec (0,944), DPCNN + FastText (0,952), FastText (0,956).}
+
+\fonte{Elaborada pelo autor.}
+\end{table}
+
+A principal distinção deste trabalho em relação ao estado da arte é a operação
+cross-engine: nenhum trabalho anterior propôs uma representação intermediária que
+unifique os bytecodes de múltiplos motores JavaScript para fins de classificação de
+fingerprinting, nem avaliou quantitativamente o custo de F1 dessa
+generalização.

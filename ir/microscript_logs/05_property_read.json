@@ -1,0 +1,38 @@
+{
+  "script": "05_property_read",
+  "v8": [
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_6211134554334037388",
+      "script_url": "",
+      "start_pos": 0,
+      "end_pos": 0,
+      "bytecodes": "LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_9105706223458006884",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/05_property_read/page.html",
+      "start_pos": 0,
+      "end_pos": 158,
+      "bytecodes": "LdaConstant,Star1,Mov,CallRuntime,LdaGlobal,Star1,CreateObjectLiteral,Star2,CallUndefinedReceiver1,Star0,Return"
+    },
+    {
+      "function_name": "propertyRead",
+      "injected_id": "fn_7136209598178737752",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/05_property_read/page.html",
+      "start_pos": 22,
+      "end_pos": 105,
+      "bytecodes": "GetNamedProperty,Star0,GetNamedProperty,Star1,GetNamedProperty,Star2,Ldar,Return"
+    }
+  ],
+  "sm": [
+    {
+      "function_name": "propertyRead",
+      "injected_id": "propertyRead",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/05_property_read/page.html",
+      "script_id": "1",
+      "bytecodes": "GetArg, GetProp, SetLocal, Pop, GetArg, GetProp, SetLocal, Pop, GetArg, GetProp, SetLocal, Pop, GetLocal, Return, RetRval,"
+    }
+  ]
+}

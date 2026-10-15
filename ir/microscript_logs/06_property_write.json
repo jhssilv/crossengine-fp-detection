@@ -1,0 +1,38 @@
+{
+  "script": "06_property_write",
+  "v8": [
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_6211134554334037388",
+      "script_url": "",
+      "start_pos": 0,
+      "end_pos": 0,
+      "bytecodes": "LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_16117967137879018663",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/06_property_write/page.html",
+      "start_pos": 0,
+      "end_pos": 148,
+      "bytecodes": "LdaConstant,Star1,Mov,CallRuntime,LdaGlobal,Star1,CreateObjectLiteral,Star2,LdaConstant,Star3,CallUndefinedReceiver2,Star0,Return"
+    },
+    {
+      "function_name": "propertyWrite",
+      "injected_id": "fn_15620995992099804406",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/06_property_write/page.html",
+      "start_pos": 23,
+      "end_pos": 98,
+      "bytecodes": "Ldar,SetNamedProperty,GetNamedProperty,AddSmi,SetNamedProperty,Ldar,Return"
+    }
+  ],
+  "sm": [
+    {
+      "function_name": "propertyWrite",
+      "injected_id": "propertyWrite",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/06_property_write/page.html",
+      "script_id": "1",
+      "bytecodes": "GetArg, GetArg, SetProp, Pop, GetArg, GetArg, GetProp, One, Add, SetProp, Pop, GetArg, Return, RetRval,"
+    }
+  ]
+}

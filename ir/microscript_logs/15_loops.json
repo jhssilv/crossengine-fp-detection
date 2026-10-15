@@ -1,0 +1,38 @@
+{
+  "script": "15_loops",
+  "v8": [
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_6211134554334037388",
+      "script_url": "",
+      "start_pos": 0,
+      "end_pos": 0,
+      "bytecodes": "LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_151939377907088755",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/15_loops/page.html",
+      "start_pos": 0,
+      "end_pos": 182,
+      "bytecodes": "LdaConstant,Star1,Mov,CallRuntime,LdaGlobal,Star1,LdaSmi,Star2,CallUndefinedReceiver1,Star0,Return"
+    },
+    {
+      "function_name": "loops",
+      "injected_id": "fn_6849959866475513052",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/15_loops/page.html",
+      "start_pos": 15,
+      "end_pos": 169,
+      "bytecodes": "LdaZero,Star0,LdaZero,Star1,Ldar,TestLessThan,JumpIfFalse,Ldar,Add,Star0,Ldar,Inc,Star1,JumpLoop,LdaZero,Star2,Ldar,TestLessThan,JumpIfFalse,Ldar,Add,Star0,Ldar,Inc,Star2,JumpLoop,Ldar,Return"
+    }
+  ],
+  "sm": [
+    {
+      "function_name": "loops",
+      "injected_id": "loops",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/15_loops/page.html",
+      "script_id": "1",
+      "bytecodes": "Zero, SetLocal, Pop, Zero, SetLocal, Pop, LoopHead, GetLocal, GetArg, Lt, JumpIfFalse, JumpTarget, GetLocal, GetLocal, Add, SetLocal, Pop, GetLocal, ToNumeric, Inc, SetLocal, Pop, Goto, JumpTarget, Zero, SetLocal, Pop, LoopHead, GetLocal, GetArg, Lt, JumpIfFalse, JumpTarget, GetLocal, GetLocal, Add, SetLocal, Pop, GetLocal, ToNumeric, Inc, SetLocal, Pop, Goto, JumpTarget, GetLocal, Return, RetRval,"
+    }
+  ]
+}

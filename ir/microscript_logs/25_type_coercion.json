@@ -1,0 +1,38 @@
+{
+  "script": "25_type_coercion",
+  "v8": [
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_6211134554334037388",
+      "script_url": "",
+      "start_pos": 0,
+      "end_pos": 0,
+      "bytecodes": "LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_6322623321496750446",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/25_type_coercion/page.html",
+      "start_pos": 0,
+      "end_pos": 155,
+      "bytecodes": "LdaConstant,Star1,Mov,CallRuntime,LdaGlobal,Star1,LdaConstant,Star2,CallUndefinedReceiver1,Star0,Return"
+    },
+    {
+      "function_name": "typeCoercion",
+      "injected_id": "fn_6882868872882551146",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/25_type_coercion/page.html",
+      "start_pos": 22,
+      "end_pos": 133,
+      "bytecodes": "LdaGlobal,Star4,CallUndefinedReceiver1,Star0,LdaGlobal,Star4,CallUndefinedReceiver1,Star1,Ldar,ToNumber,Star2,LdaGlobal,Star4,CallUndefinedReceiver1,Star3,Ldar,Add,Return"
+    }
+  ],
+  "sm": [
+    {
+      "function_name": "typeCoercion",
+      "injected_id": "typeCoercion",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/25_type_coercion/page.html",
+      "script_id": "1",
+      "bytecodes": "GetGName, Undefined, GetArg, Call, SetLocal, Pop, GetGName, Undefined, GetArg, Call, SetLocal, Pop, GetArg, Pos, SetLocal, Pop, GetGName, Undefined, GetArg, Call, SetLocal, Pop, GetLocal, GetLocal, Add, Return, RetRval,"
+    }
+  ]
+}

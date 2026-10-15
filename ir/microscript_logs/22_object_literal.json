@@ -1,0 +1,38 @@
+{
+  "script": "22_object_literal",
+  "v8": [
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_6211134554334037388",
+      "script_url": "",
+      "start_pos": 0,
+      "end_pos": 0,
+      "bytecodes": "LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_7047599169130253064",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/22_object_literal/page.html",
+      "start_pos": 0,
+      "end_pos": 134,
+      "bytecodes": "LdaConstant,Star1,Mov,CallRuntime,LdaGlobal,Star1,LdaSmi,Star2,LdaSmi,Star3,CallUndefinedReceiver2,Star0,Return"
+    },
+    {
+      "function_name": "objectLiteral",
+      "injected_id": "fn_14100582997479118468",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/22_object_literal/page.html",
+      "start_pos": 23,
+      "end_pos": 111,
+      "bytecodes": "CreateObjectLiteral,Star2,Ldar,DefineNamedOwnProperty,Ldar,DefineNamedOwnProperty,Ldar,Add,DefineNamedOwnProperty,Mov,CreateEmptyObjectLiteral,Star1,GetNamedProperty,Return"
+    }
+  ],
+  "sm": [
+    {
+      "function_name": "objectLiteral",
+      "injected_id": "objectLiteral",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/22_object_literal/page.html",
+      "script_id": "1",
+      "bytecodes": "NewObject, GetArg, InitProp, GetArg, InitProp, GetArg, GetArg, Add, InitProp, SetLocal, Pop, NewObject, SetLocal, Pop, GetLocal, GetProp, Return, RetRval,"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "script": "23_array_literal",
+  "v8": [
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_6211134554334037388",
+      "script_url": "",
+      "start_pos": 0,
+      "end_pos": 0,
+      "bytecodes": "LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_1133875996347600227",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/23_array_literal/page.html",
+      "start_pos": 0,
+      "end_pos": 118,
+      "bytecodes": "LdaConstant,Star1,Mov,CallRuntime,LdaGlobal,Star1,LdaSmi,Star2,LdaSmi,Star3,CallUndefinedReceiver2,Star0,Return"
+    },
+    {
+      "function_name": "arrayLiteral",
+      "injected_id": "fn_12071045788880354716",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/23_array_literal/page.html",
+      "start_pos": 22,
+      "end_pos": 96,
+      "bytecodes": "CreateArrayLiteral,Star2,LdaZero,Star3,Ldar,StaInArrayLiteral,LdaSmi,Star3,Ldar,StaInArrayLiteral,LdaSmi,Star3,Ldar,Add,StaInArrayLiteral,Mov,CreateEmptyArrayLiteral,Star1,LdaSmi,GetKeyedProperty,Return"
+    }
+  ],
+  "sm": [
+    {
+      "function_name": "arrayLiteral",
+      "injected_id": "arrayLiteral",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/23_array_literal/page.html",
+      "script_id": "1",
+      "bytecodes": "NewArray, GetArg, InitElemArray, GetArg, InitElemArray, GetArg, GetArg, Add, InitElemArray, SetLocal, Pop, NewArray, SetLocal, Pop, GetLocal, Int8, GetElem, Return, RetRval,"
+    }
+  ]
+}

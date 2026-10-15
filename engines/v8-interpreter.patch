@@ -1,0 +1,329 @@
+diff --git a/src/interpreter/interpreter.cc b/src/interpreter/interpreter.cc
+index fa3974c08bd..e8084f4e0bf 100644
+--- a/src/interpreter/interpreter.cc
++++ b/src/interpreter/interpreter.cc
+@@ -4,8 +4,9 @@
+ 
+ #include "src/interpreter/interpreter.h"
+ 
+-#include <fstream>
++#include <iostream>
+ #include <memory>
++#include <mutex>
+ 
+ #include "builtins-generated/bytecodes-builtins-list.h"
+ #include "src/ast/prettyprinter.h"
+@@ -77,12 +78,9 @@ Builtin BuiltinIndexFromBytecode(Bytecode bytecode,
+     if (Bytecodes::IsShortStar(bytecode)) {
+       index = static_cast<int>(Bytecode::kFirstShortStar);
+     } else if (bytecode > Bytecode::kLastShortStar) {
+-      // Adjust the index due to repeated handlers.
+       index -= Bytecodes::kShortStarCount - 1;
+     }
+   } else {
+-    // The table contains uint8_t offsets starting at 0 with
+-    // kIllegalBytecodeHandlerEncoding for illegal bytecode/scale combinations.
+     uint8_t offset = kWideBytecodeToBuiltinsMapping[index];
+     if (offset == kIllegalBytecodeHandlerEncoding) {
+       return Builtin::kIllegalHandler;
+@@ -97,6 +95,18 @@ Builtin BuiltinIndexFromBytecode(Bytecode bytecode,
+                            index);
+ }
+ 
++// FNV-1a 64-bit: hash estável entre execuções e plataformas.
++// std::hash<std::string> é randomizado por sessão em muitos compiladores
++// (seed via ASLR), tornando os IDs irreproduzíveis entre runs.
++uint64_t FNV1a64(const std::string& s) {
++  uint64_t h = 14695981039346656037ULL;
++  for (unsigned char c : s) {
++    h ^= c;
++    h *= 1099511628211ULL;
++  }
++  return h;
++}
++
+ }  // namespace
+ 
+ Tagged<Code> Interpreter::GetBytecodeHandler(Bytecode bytecode,
+@@ -140,19 +150,6 @@ void MaybePrintAst(ParseInfo* parse_info,
+ #endif  // DEBUG
+ }
+ 
+-bool ShouldPrintBytecode(DirectHandle<SharedFunctionInfo> shared) {
+-  if (!v8_flags.print_bytecode) return false;
+-
+-  // Checks whether function passed the filter.
+-  if (shared->is_toplevel()) {
+-    base::Vector<const char> filter =
+-        base::CStrVector(v8_flags.print_bytecode_filter);
+-    return filter.empty() || (filter.length() == 1 && filter[0] == '*');
+-  } else {
+-    return shared->PassesFilter(v8_flags.print_bytecode_filter);
+-  }
+-}
+-
+ }  // namespace
+ 
+ InterpreterCompilationJob::InterpreterCompilationJob(
+@@ -173,7 +170,6 @@ InterpreterCompilationJob::Status InterpreterCompilationJob::ExecuteJobImpl() {
+   RCS_SCOPE(parse_info()->runtime_call_stats(),
+             RuntimeCallCounterId::kCompileIgnition,
+             RuntimeCallStats::kThreadSpecific);
+-  // TODO(lpy): add support for background compilation RCS trace.
+   TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("v8.compile"), "V8.CompileIgnition");
+ 
+   std::optional<base::ElapsedTimer> timer;
+@@ -183,8 +179,6 @@ InterpreterCompilationJob::Status InterpreterCompilationJob::ExecuteJobImpl() {
+     timer->Start();
+   }
+ 
+-  // Print AST if flag is enabled. Note, if compiling on a background thread
+-  // then ASTs from different functions may be intersperse when printed.
+   {
+     DisallowGarbageCollection no_heap_access;
+     MaybePrintAst(parse_info(), compilation_info());
+@@ -224,28 +218,17 @@ void InterpreterCompilationJob::CheckAndPrintBytecodeMismatch(
+     DirectHandle<BytecodeArray> new_bytecode =
+         generator()->FinalizeBytecode(isolate, script);
+ 
+-    std::cerr << "Bytecode mismatch";
+-#ifdef OBJECT_PRINT
+-    std::cerr << " found for function: ";
+-    MaybeDirectHandle<String> maybe_name =
+-        parse_info()->literal()->GetName(isolate);
+-    DirectHandle<String> name;
+-    if (maybe_name.ToHandle(&name) && name->length() != 0) {
+-      name->PrintUC16(std::cerr);
+-    } else {
+-      std::cerr << "anonymous";
++    StdoutStream os;
++    if (script->name().IsString()) {
++      os << Cast<String>(script->name());
+     }
+-    Tagged<Object> script_name = script->GetNameOrSourceURL();
+-    if (IsString(script_name)) {
+-      std::cerr << " ";
+-      Cast<String>(script_name)->PrintUC16(std::cerr);
+-      std::cerr << ":" << parse_info()->literal()->start_position();
++    if (parse_info()->literal()->start_position() != kNoSourcePosition) {
++      os << ":" << parse_info()->literal()->start_position();
+     }
+-#endif
+-    std::cerr << "\nOriginal bytecode:\n";
+-    bytecode->Disassemble(std::cerr);
+-    std::cerr << "\nNew bytecode:\n";
+-    new_bytecode->Disassemble(std::cerr);
++    os << "\nOriginal bytecode:\n";
++    bytecode->Disassemble(os);
++    os << "\nNew bytecode:\n";
++    new_bytecode->Disassemble(os);
+     FATAL("Bytecode mismatch at offset %d\n", first_mismatch);
+   }
+ }
+@@ -272,32 +255,137 @@ InterpreterCompilationJob::Status InterpreterCompilationJob::FinalizeJobImpl(
+ template <typename IsolateT>
+ InterpreterCompilationJob::Status InterpreterCompilationJob::DoFinalizeJobImpl(
+     DirectHandle<SharedFunctionInfo> shared_info, IsolateT* isolate) {
++
++  // Guarda: Built-ins, extensões e WASM não têm Script associado.
++  Tagged<Object> raw_script = shared_info->script(kAcquireLoad);
++  if (!IsScript(raw_script)) {
++    Handle<BytecodeArray> bytecodes_plain = compilation_info_.bytecode_array();
++    if (!bytecodes_plain.is_null() &&
++        compilation_info()->SourcePositionRecordingMode() ==
++            SourcePositionTableBuilder::RecordingMode::RECORD_SOURCE_POSITIONS) {
++      DirectHandle<TrustedByteArray> source_position_table =
++          generator()->FinalizeSourcePositionTable(isolate);
++      bytecodes_plain->set_source_position_table(*source_position_table,
++                                                 kReleaseStore);
++    }
++    return SUCCEEDED;
++  }
++
++  DirectHandle<Script> script(Cast<Script>(raw_script), isolate);
++
+   Handle<BytecodeArray> bytecodes = compilation_info_.bytecode_array();
+   if (bytecodes.is_null()) {
+-    bytecodes = generator()->FinalizeBytecode(
+-        isolate, handle(Cast<Script>(shared_info->script()), isolate));
++    Tagged<Object> raw_script2 = shared_info->script(kAcquireLoad);
++    Handle<Script> script_handle;
++    if (IsScript(raw_script2)) {
++      script_handle = handle(Cast<Script>(raw_script2), isolate);
++    }
++    bytecodes = generator()->FinalizeBytecode(isolate, script_handle);
+     if (generator()->HasStackOverflow()) {
+       return FAILED;
+     }
+     compilation_info()->SetBytecodeArray(bytecodes);
+   }
+ 
+-  if (compilation_info()->SourcePositionRecordingMode() ==
+-      SourcePositionTableBuilder::RecordingMode::RECORD_SOURCE_POSITIONS) {
+-    DirectHandle<TrustedByteArray> source_position_table =
+-        generator()->FinalizeSourcePositionTable(isolate);
+-    bytecodes->set_source_position_table(*source_position_table, kReleaseStore);
++  // ── 1. IDENTIFICAÇÃO ESTÁVEL DA FUNÇÃO ──────────────────────────────────────
++  std::string script_url_str = "unknown";
++  {
++      Tagged<Object> name = script->name();
++      if (IsString(name)) {
++          std::unique_ptr<char[]> chars = Cast<String>(name)->ToCString();
++          script_url_str = chars.get();
++      }
+   }
+ 
+-  if (ShouldPrintBytecode(shared_info)) {
+-    StdoutStream os;
+-    std::unique_ptr<char[]> name =
+-        compilation_info()->literal()->GetDebugName();
+-    os << "[generated bytecode for function: " << name.get() << " ("
+-       << shared_info << ")]" << std::endl;
+-    os << "Bytecode length: " << bytecodes->length() << std::endl;
+-    bytecodes->Disassemble(os);
+-    os << std::flush;
++  int script_id = script->id();
++  int start_pos = compilation_info_.literal()->start_position();
++  int end_pos   = compilation_info_.literal()->end_position();
++
++  const std::string seed =
++      "v8/" + script_url_str +
++      "/" + std::to_string(start_pos) +
++      "/" + std::to_string(end_pos);
++  const std::string injected_id = "fn_" + std::to_string(FNV1a64(seed));
++
++  // Nome legível: usa o literal AST (não acessa heap V8, seguro em background)
++  std::string func_debug_name;
++  {
++    std::unique_ptr<char[]> raw = compilation_info_.literal()->GetDebugName();
++    func_debug_name = (raw && raw[0] != '\0') ? raw.get() : "(anonymous)";
++  }
++
++  // ── 2. SEQUÊNCIA DE BYTECODES ────────────────────────────────────────────────
++  std::string bytecode_sequence;
++  if (!bytecodes.is_null()) {
++    interpreter::BytecodeArrayIterator it(bytecodes);
++    while (!it.done()) {
++      bytecode_sequence +=
++          interpreter::Bytecodes::ToString(it.current_bytecode());
++      bytecode_sequence += ',';
++      it.Advance();
++    }
++    if (!bytecode_sequence.empty()) {
++      bytecode_sequence.pop_back();  // remove vírgula final
++    }
++  } else {
++    bytecode_sequence = "<lazy_or_empty>";
++  }
++
++  // ── 2b. CALLEE IDs (constant pool scan for eagerly compiled inner functions) ──
++  // Captures inner/nested function definitions. Used for call-graph label
++  // propagation: if a nested function is FP, its parent wrapper likely is too.
++  std::string callee_json = "";
++  if (!bytecodes.is_null()) {
++    auto pool = bytecodes->constant_pool();
++    int pool_len = static_cast<int>(pool->length().value());
++    bool first_callee = true;
++    for (int i = 0; i < pool_len; i++) {
++      Tagged<Object> entry = pool->get(i);
++      if (IsSharedFunctionInfo(entry)) {
++        Tagged<SharedFunctionInfo> inner = Cast<SharedFunctionInfo>(entry);
++        int s = inner->StartPosition();
++        int e = inner->EndPosition();
++        if (s >= 0 && e > s) {
++          std::string inner_seed = "v8/" + script_url_str + "/" +
++                                   std::to_string(s) + "/" + std::to_string(e);
++          if (!first_callee) callee_json += ",";
++          callee_json += "\"fn_" + std::to_string(FNV1a64(inner_seed)) + "\"";
++          first_callee = false;
++        }
++      }
++    }
++  }
++
++  // ── 3. EMISSÃO PARA STDERR (capturado pelo crawler via subprocess.PIPE) ─────
++  {
++    static std::mutex v8log_mutex;
++    std::lock_guard<std::mutex> lock(v8log_mutex);
++
++    // Escapa aspas e barras para não quebrar o JSON
++    auto json_escape = [](const std::string& s) {
++      std::string out;
++      out.reserve(s.size());
++      for (unsigned char c : s) {
++        if      (c == '"')  { out += "\\\""; }
++        else if (c == '\\') { out += "\\\\"; }
++        else if (c == '\n') { out += "\\n";  }
++        else if (c == '\r') { out += "\\r";  }
++        else                { out += c;      }
++      }
++      return out;
++    };
++
++    std::cerr << "[V8Log] "
++              << "{\"injected_id\":\""  << injected_id                     << "\""
++              << ",\"script_url\":\""   << json_escape(script_url_str)     << "\""
++              << ",\"script_id\":"      << script_id
++              << ",\"start_pos\":"      << start_pos
++              << ",\"end_pos\":"        << end_pos
++              << ",\"func_name\":\""    << json_escape(func_debug_name)    << "\""
++              << ",\"bytecodes\":\""    << json_escape(bytecode_sequence)  << "\""
++              << ",\"callees\":["       << callee_json                     << "]"
++              << "}\n"
++              << std::flush;
+   }
+ 
+ #ifdef DEBUG
+@@ -305,8 +393,7 @@ InterpreterCompilationJob::Status InterpreterCompilationJob::DoFinalizeJobImpl(
+     parse_info()->literal()->set_shared_function_info(
+         indirect_handle(shared_info, isolate));
+   }
+-  CheckAndPrintBytecodeMismatch(
+-      isolate, handle(Cast<Script>(shared_info->script()), isolate), bytecodes);
++  CheckAndPrintBytecodeMismatch(isolate, handle(*script, isolate), bytecodes);
+ #endif
+ 
+   return SUCCEEDED;
+@@ -351,19 +438,11 @@ void Interpreter::ForEachBytecode(
+ void Interpreter::Initialize() {
+   Builtins* builtins = isolate_->builtins();
+ 
+-  // Set the interpreter entry trampoline entry point now that builtins are
+-  // initialized.
+   DirectHandle<Code> code = BUILTIN_CODE(isolate_, InterpreterEntryTrampoline);
+   DCHECK(builtins->is_initialized());
+   DCHECK(!code->has_instruction_stream());
+   interpreter_entry_trampoline_instruction_start_ = code->instruction_start();
+ 
+-  // Initialize the dispatch table with pointers to IllegalHandler.
+-  // This way, if we ever run into a situation where an invalid/unknown opcode
+-  // is executed, this will be reported as a sandbox violation. This is
+-  // important as such crashes are typically the symptom of a bug that could
+-  // lead to arbitrary, attacker-controlled bytecode execution, which would
+-  // allow breaking out of the sandbox.
+   Tagged<Code> illegal_bytecode_handler =
+       builtins->code(Builtin::kIllegalHandler);
+   for (int i = 0; i < kDispatchTableSize; ++i) {
+@@ -384,7 +463,6 @@ void Interpreter::Initialize() {
+       DCHECK_EQ(expected_name, builtin_name);
+ #endif
+     }
+-
+     SetBytecodeHandler(bytecode, operand_scale, handler);
+   });
+   DCHECK(IsDispatchTableInitialized());
+@@ -394,6 +472,14 @@ bool Interpreter::IsDispatchTableInitialized() const {
+   return dispatch_table_[0] != kNullAddress;
+ }
+ 
++template InterpreterCompilationJob::Status
++InterpreterCompilationJob::DoFinalizeJobImpl(
++    DirectHandle<SharedFunctionInfo> shared_info, Isolate* isolate);
++
++template InterpreterCompilationJob::Status
++InterpreterCompilationJob::DoFinalizeJobImpl(
++    DirectHandle<SharedFunctionInfo> shared_info, LocalIsolate* isolate);
++
+ }  // namespace interpreter
+ }  // namespace internal
+ }  // namespace v8

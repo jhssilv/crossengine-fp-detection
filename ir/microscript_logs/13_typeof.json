@@ -1,0 +1,38 @@
+{
+  "script": "13_typeof",
+  "v8": [
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_6211134554334037388",
+      "script_url": "",
+      "start_pos": 0,
+      "end_pos": 0,
+      "bytecodes": "LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_7822359606525582225",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/13_typeof/page.html",
+      "start_pos": 0,
+      "end_pos": 236,
+      "bytecodes": "LdaConstant,Star1,Mov,CallRuntime,LdaGlobal,Star1,LdaConstant,Star2,CallUndefinedReceiver1,Star0,Return"
+    },
+    {
+      "function_name": "typeofCheck",
+      "injected_id": "fn_2567810147454726536",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/13_typeof/page.html",
+      "start_pos": 21,
+      "end_pos": 212,
+      "bytecodes": "Ldar,TypeOf,Star0,Ldar,TestTypeOf,Star1,Ldar,TestTypeOf,Star2,Ldar,TestTypeOf,Star3,Ldar,TestTypeOf,Star4,Ldar,Return"
+    }
+  ],
+  "sm": [
+    {
+      "function_name": "typeofCheck",
+      "injected_id": "typeofCheck",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/13_typeof/page.html",
+      "script_id": "1",
+      "bytecodes": "GetArg, Typeof, SetLocal, Pop, GetArg, TypeofEq, SetLocal, Pop, GetArg, TypeofEq, SetLocal, Pop, GetArg, TypeofEq, SetLocal, Pop, GetArg, TypeofEq, SetLocal, Pop, GetLocal, Return, RetRval,"
+    }
+  ]
+}

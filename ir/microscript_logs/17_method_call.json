@@ -1,0 +1,38 @@
+{
+  "script": "17_method_call",
+  "v8": [
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_6211134554334037388",
+      "script_url": "",
+      "start_pos": 0,
+      "end_pos": 0,
+      "bytecodes": "LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_4555272310223894549",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/17_method_call/page.html",
+      "start_pos": 0,
+      "end_pos": 189,
+      "bytecodes": "LdaConstant,Star1,Mov,CallRuntime,LdaGlobal,Star1,CreateArrayLiteral,Star2,CallUndefinedReceiver1,Star0,Return"
+    },
+    {
+      "function_name": "methodCall",
+      "injected_id": "fn_12917885307060814098",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/17_method_call/page.html",
+      "start_pos": 20,
+      "end_pos": 164,
+      "bytecodes": "GetNamedProperty,Star0,GetNamedProperty,Star4,LdaConstant,Star6,CallProperty1,Star1,GetNamedProperty,Star4,LdaZero,Star6,LdaSmi,Star7,CallProperty2,Star2,GetNamedProperty,Star4,LdaSmi,Star6,CallProperty1,Star3,Ldar,Return"
+    }
+  ],
+  "sm": [
+    {
+      "function_name": "methodCall",
+      "injected_id": "methodCall",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/17_method_call/page.html",
+      "script_id": "1",
+      "bytecodes": "GetArg, GetProp, SetLocal, Pop, GetArg, Dup, GetProp, Swap, String, Call, SetLocal, Pop, GetArg, Dup, GetProp, Swap, Zero, Int8, Call, SetLocal, Pop, GetArg, Dup, GetProp, Swap, Int8, Call, SetLocal, Pop, GetLocal, Return, RetRval,"
+    }
+  ]
+}

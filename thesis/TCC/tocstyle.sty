@@ -1,0 +1,11 @@
+%% tocstyle.sty — compatibility stub
+%% tocstyle (KOMA-Script) was deprecated and removed from modern TeX Live.
+%% This stub silently absorbs all its commands so iiufrgs.cls compiles cleanly.
+\ProvidesPackage{tocstyle}[2024/01/01 v0.0 compatibility stub]
+\DeclareOption*{}
+\ProcessOptions\relax
+\RequirePackage{xparse}
+%% \settocfeature[<list>][<level>]{<feature>}{<value>}
+\NewDocumentCommand{\settocfeature}{O{} O{} m m}{}
+%% \settocstylefeature{<feature>}{<value>}
+\NewDocumentCommand{\settocstylefeature}{m m}{}

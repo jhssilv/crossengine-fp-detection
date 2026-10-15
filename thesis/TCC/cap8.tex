@@ -1,0 +1,172 @@
+% ============================================================
+%  Capítulo 8 — Conclusão
+% ============================================================
+\chapter{CONCLUSÃO}
+\label{cap:conclusao}
+
+\section{Síntese das contribuições}
+\label{sec:conclusao-contrib}
+
+Este trabalho partiu de uma limitação concreta do estado da arte: o ByteDefender
+\cite{nikkhahbahrami2025} demonstrou que bytecodes V8 são suficientemente
+discriminativos para detectar funções de browser fingerprinting com
+F1~$\approx$~0,95, mas o modelo é restrito a um único motor JavaScript e não
+transfere para o Firefox/SpiderMonkey sem retreinamento completo. A questão central
+investigada foi: é possível construir um único classificador que opere corretamente
+em ambos os motores sem retreinamento por motor?
+
+A resposta é afirmativa, com custo mensurável. As contribuições que sustentam essa
+resposta são descritas a seguir.
+
+\textbf{Instrumentação do SpiderMonkey com rastreamento de funções anônimas.} O
+Firefox foi modificado para emitir, a cada função compilada, sua sequência de
+bytecodes e metadados de identificação. O problema específico das funções anônimas
+(a maioria das funções em bundles minificados) foi resolvido injetando
+um identificador único como \texttt{displayName} no momento da compilação, que se
+propaga para \texttt{Error.stack} e permite o join direto com as chamadas de
+API capturadas pela extensão. Essa solução recuperou dados que a abordagem por
+posição no código-fonte perdia em $\approx$38\% dos casos.
+
+\textbf{Pipeline de coleta cross-engine.} Um crawler de dupla engine visita
+os 10.000 sites mais populares da lista Tranco com Firefox e Chromium
+instrumentados. Uma extensão de navegador compartilhada (Manifest~V3) intercepta 32
+APIs de fingerprinting, normaliza propriedades exclusivas do Firefox para que
+as bibliotecas de rastreamento executem o mesmo caminho de código nos dois
+navegadores, e captura chamadas com resolução de frame múltiplo no call
+stack. O resultado é um dataset rotulado de \textbf{68.008.403 funções JavaScript}
+com 37.644 exemplos positivos de sete categorias de fingerprinting, produzido
+com ambos os motores sobre o mesmo conjunto de sites.
+
+\textbf{Representação intermediária cross-engine (contribuição principal).} Um
+vocabulário de \textbf{145 tokens} (136 ativos no TF-IDF) que mapeia os opcodes nativos do V8 (198
+entradas) e do SpiderMonkey (236 entradas) para uma representação compartilhada,
+construído por execução pareada de 27 micro-scripts e alinhamento empírico das
+sequências de bytecodes resultantes. A RI atinge \textbf{cobertura de 99,82\%} dos
+tokens observados no corpus real de 68 milhões de funções, com apenas 0,18\%
+mapeados para \texttt{<UNK>}. Embeddings FastText Skip-gram treinados sobre o corpus
+traduzido (128 dimensões, $t=0{,}0$) apresentam coerência semântica de categoria com
+gap intra/inter de +0,237.
+
+\textbf{Avaliação comparativa de classificadores e inferência iterativa.} Cinco
+famílias de modelos foram treinadas e avaliadas sobre a RI na tarefa binária
+(RF, LightGBM, SVM, BiLSTM e Transformer); três dessas famílias (RF, LightGBM
+e Transformer) foram também avaliadas na tarefa multilabel
+(Tabela~\ref{tab:multilabel}), com a mesma divisão e as mesmas features em
+todos os experimentos.
+O teto de detecção baseada exclusivamente em tokens de RI (sem contexto de script)
+situa-se em F1~$\approx$~0,85 (LightGBM com bigrams). O melhor
+modelo sem inferência iterativa, LightGBM com bigrams e densidade de script, atinge
+F1~=~0,853. A inferência iterativa, que recomputa contagens de funções
+previstas em múltiplos limiares como features de contexto de script, eleva o
+\textbf{resultado implantável para F1~=~0,904} sem nenhum rótulo externo. O melhor classificador multilabel, Random Forest com
+\texttt{balanced\_subsample}, atinge \textbf{macro-F1~=~0,564}. Os experimentos
+de transferência zero-shot confirmam que a RI é necessária mas não suficiente: o
+treinamento conjunto produz um modelo com \textbf{F1~=~0,903 no Chromium e
+F1~=~0,904 no Firefox} (com contexto iterativo) a partir de um único conjunto de
+pesos. A diferença de
+$\approx$5 pontos de F1 em relação ao ByteDefender (F1~=~0,904 vs.\
+$\approx$0,950) é o custo quantificado da portabilidade entre motores, acrescido de uma tarefa estritamente mais difícil: funções anônimas incluídas,
+sete categorias de fingerprinting e features exclusivamente de bytecodes
+sem metadados.
+
+As perguntas de pesquisa formuladas no Capítulo~\ref{cap:intro} são respondidas
+como segue. \textbf{PQ1} (cobertura da RI $>99\%$): afirmativa, 99,82\% de
+cobertura no corpus real de 68 milhões de funções. \textbf{PQ2} (detector único
+cross-engine com F1 comparável ao estado da arte): afirmativa, modelo conjunto
+atinge F1~=~0,903 no Chromium e F1~=~0,904 no Firefox (com contexto iterativo) sem retreinamento por motor.
+\textbf{PQ3} (RI suficiente para zero-shot): negativa, transferência zero-shot
+falha (F1 entre 0,149 e 0,180); treinamento conjunto é condição necessária.
+\textbf{PQ4} (teto de informação): F1~$\approx$~0,85 para bytecodes puros;
+F1~=~0,904 com inferência iterativa sem rótulos externos; F1~=~0,928 como limite
+superior oracle.
+
+%, , , , , , , , , , , , , , , , , , , --
+\section{Limitações}
+\label{sec:conclusao-limitacoes}
+
+\textbf{Teto de informação dos bytecodes puros.} O F1~$\approx$~0,85 (F1~=~0,843
+com bigrams; F1~=~0,845 com trigrams) representa o
+teto para detecção baseada exclusivamente em tokens de RI sem qualquer feature de
+contexto de script. O F1~=~0,853 do modelo de bigrams com densidade de script
+(Tabela~\ref{tab:bin}) já incorpora um primeiro passo de contexto de
+script e não é comparável ao teto de bytecodes puros. A transição de bigrams para
+trigrams (+0,002~F1 com 10,7$\times$ mais features) indica que o espaço de n-grams
+sobre 145 tokens está essencialmente exaurido. A inferência iterativa eleva o
+resultado implantável para F1~=~0,904 incorporando contagens previstas como contexto
+de script, sem consultar rótulos reais. Superar o limite superior oracle
+(F1~=~0,928) requer sinais ausentes nos bytecodes: nomes de funções, contexto de
+grafo de chamadas ou valores em tempo de execução.
+
+\textbf{Rótulos raros no multilabel.} WebRTC (180 funções FP no dataset completo) e
+Fonte (208) possuem suporte insuficiente para aprendizado confiável. Os melhores
+resultados, F1~=~0,201 e F1~=~0,345 respectivamente, refletem a escassez de
+dados, não uma limitação intrínseca da abordagem. A taxa de fingerprinting
+WebRTC e de enumeração de fontes nos 10.000 sites mais populares é genuinamente
+baixa.
+
+\textbf{Cobertura de Web Workers e código lazy.} A extensão de captura não injeta
+hooks em contextos de Web Worker; APIs de fingerprinting invocadas em Workers
+não são registradas. Funções em pacotes de rota não ativados durante a visita do
+crawler não aparecem nos logs de bytecodes.
+
+\textbf{JavaScriptCore não instrumentado.} A RI cobre V8 e SpiderMonkey. JavaScriptCore
+(Safari) não foi instrumentado; a portabilidade para um terceiro motor permanece
+como hipótese de extensão, não como resultado demonstrado.
+
+\textbf{Comparação com ByteDefender parcialmente controlada.} A composição do
+dataset do ByteDefender, seleção de sites, profundidade de crawl e taxa
+de positivos, não foi divulgada publicamente. O gap de $\approx$5 pontos de F1
+comparando o modelo implantável (F1~=~0,904) com o ByteDefender
+($\approx$0,950), inclui fatores não isoláveis além da diferença de motor,
+incluindo a inclusão de funções anônimas e um espaço de rótulos mais amplo
+(7 categorias vs.\ 4 do ByteDefender).
+
+\textbf{Custo de abstração da RI não isolado.} O custo de $\approx$5 pontos de
+F1 em relação ao ByteDefender é atribuído à portabilidade entre motores, mas
+mistura pelo menos três fatores: (1)~perda de informação pela abstração da RI
+(fusão de opcodes distintos em tokens compartilhados); (2)~ruído distribucional
+do corpus conjunto (V8 e SpiderMonkey geram n-grams distintos para a mesma
+construção JavaScript); e (3)~tarefa estritamente mais difícil (funções
+anônimas, 7 categorias, sem metadados). Um baseline limpo para isolar o
+componente~(1) seria um modelo treinado e testado \emph{no mesmo motor}, mas
+sobre a RI em vez dos bytecodes brutos. Esse experimento não foi realizado; a
+decomposição do custo permanece qualitativa.
+
+%, , , , , , , , , , , , , , , , , , , --
+\section{Trabalhos futuros}
+\label{sec:conclusao-futuros}
+
+\textbf{Extensão a JavaScriptCore.} A arquitetura do sistema foi projetada para
+receber um terceiro motor: instrumentar o JavaScriptCore, estender o dicionário de
+equivalência com os novos mapeamentos (preservando os 145 tokens existentes, 136 ativos no TF-IDF) e
+retreinar o modelo conjunto. Essa extensão tornaria o sistema aplicável ao
+ecossistema completo de navegadores de desktop.
+
+\textbf{Sinais complementares para superar o teto.} A análise do
+Capítulo~\ref{cap:discussao} identificou três fontes de informação que poderiam
+elevar o F1 além do limite superior oracle (F1~=~0,928): nomes de funções e grafo
+de chamadas, valores de propriedades em tempo de execução, e vocabulário de opcodes
+mais fino (com menos fusões na RI). Uma abordagem híbrida que combine bytecodes com embeddings de nome
+de função, quando disponíveis em código não minificado, é uma extensão natural.
+
+\textbf{Coleta direcionada para rótulos raros.} WebRTC e Fonte atingiriam F1 mais
+alto com suporte de treinamento adequado. Identificar e incluir sites conhecidos
+por usar fingerprinting via WebRTC (ex.: serviços de videoconferência) e
+enumeração de fontes (ex.: ferramentas de design web) no corpus de crawl
+aumentaria o suporte positivo dessas categorias sem requerer mudanças no modelo.
+
+\textbf{Implantação como extensão de navegador.} Os artefatos produzidos, extensão de captura de bytecodes, dicionário de RI e modelo LightGBM de 7,1~MB, são suficientes para uma prova de conceito de extensão de navegador com detecção em
+tempo real. A latência de 44~µs por função é compatível com análise durante o
+carregamento de página; a compilação do modelo para WebAssembly viabilizaria
+execução local sem servidor.
+
+\textbf{Análise longitudinal.} O pipeline de crawl é idempotente e
+retomável. Repetir o crawl sobre os mesmos sites em intervalos regulares
+permitiria rastrear a evolução das técnicas de fingerprinting ao longo do
+tempo, novas APIs exploradas, mudanças em bibliotecas populares, e avaliar a
+estabilidade do modelo treinado diante de concept drift.
+
+\textbf{Web Workers.} Estender a extensão de captura para contextos de Worker (via
+\texttt{ServiceWorker} e \texttt{DedicatedWorkerGlobalScope}) fecharia a lacuna de
+cobertura atual e potencialmente descobriria vetores de fingerprinting não
+visíveis no contexto da página principal.

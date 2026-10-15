@@ -1,0 +1,38 @@
+{
+  "script": "16_logical",
+  "v8": [
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_6211134554334037388",
+      "script_url": "",
+      "start_pos": 0,
+      "end_pos": 0,
+      "bytecodes": "LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_9731225300006316824",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/16_logical/page.html",
+      "start_pos": 0,
+      "end_pos": 139,
+      "bytecodes": "LdaConstant,Star1,Mov,CallRuntime,LdaGlobal,Star1,LdaSmi,Star2,LdaSmi,Star3,LdaNull,Star4,CallUndefinedReceiver,Star0,Return"
+    },
+    {
+      "function_name": "logical",
+      "injected_id": "fn_382481182266226115",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/16_logical/page.html",
+      "start_pos": 17,
+      "end_pos": 116,
+      "bytecodes": "Ldar,JumpIfToBooleanFalse,Ldar,Star0,Ldar,JumpIfToBooleanTrue,Ldar,Star1,Ldar,JumpIfUndefinedOrNull,Jump,Ldar,Star2,Ldar,JumpIfToBooleanTrue,Ldar,JumpIfToBooleanTrue,Ldar,Return"
+    }
+  ],
+  "sm": [
+    {
+      "function_name": "logical",
+      "injected_id": "logical",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/16_logical/page.html",
+      "script_id": "1",
+      "bytecodes": "GetArg, And, JumpTarget, Pop, GetArg, JumpTarget, SetLocal, Pop, GetArg, Or, JumpTarget, Pop, GetArg, JumpTarget, SetLocal, Pop, GetArg, Coalesce, JumpTarget, Pop, GetArg, JumpTarget, SetLocal, Pop, GetLocal, Or, JumpTarget, Pop, GetLocal, Or, JumpTarget, Pop, GetLocal, JumpTarget, Return, RetRval,"
+    }
+  ]
+}

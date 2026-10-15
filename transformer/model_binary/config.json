@@ -1,0 +1,19 @@
+{
+  "vocab_size": 140,
+  "d_model": 128,
+  "nhead": 4,
+  "num_layers": 2,
+  "dim_feedforward": 512,
+  "dropout": 0.1,
+  "num_labels": 1,
+  "max_len": 512,
+  "neg_ratio": 10.0,
+  "binary": true,
+  "epochs_trained": 5,
+  "best_val_macro_f1": 0.41463704407746227,
+  "label_names": [
+    "is_fp"
+  ],
+  "train_size": 391752,
+  "val_size": 97939
+}

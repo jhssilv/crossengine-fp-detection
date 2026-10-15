@@ -1,0 +1,110 @@
+{
+  "script": "02_local_vars",
+  "v8": [
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_6211134554334037388",
+      "script_url": "",
+      "start_pos": 0,
+      "end_pos": 0,
+      "bytecodes": "LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_5108140486595667368",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/02_local_vars/page.html",
+      "start_pos": 0,
+      "end_pos": 108,
+      "bytecodes": "LdaConstant,Star1,Mov,CallRuntime,LdaGlobal,Star1,LdaSmi,Star2,LdaSmi,Star3,CallUndefinedReceiver2,Star0,Return"
+    },
+    {
+      "function_name": "localVars",
+      "injected_id": "fn_11984423188779222916",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/02_local_vars/page.html",
+      "start_pos": 19,
+      "end_pos": 89,
+      "bytecodes": "Mov,Mov,Mov,Mov,Ldar,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_11327599482670882302",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/include/integration.js",
+      "start_pos": 1061,
+      "end_pos": 2195,
+      "bytecodes": "Ldar,JumpIfToBooleanFalse,LdaImmutableCurrentContextSlot,Star1,CallUndefinedReceiver1,Jump,LdaModuleVariable,ThrowReferenceErrorIfHole,Star1,LdaConstant,Star2,LdaConstant,Star3,CallUndefinedReceiver2,Star0,LdaGlobal,Star1,GetNamedProperty,Star1,GetNamedProperty,JumpIfToBooleanFalse,LdaGlobal,Star1,GetNamedProperty,Star1,GetNamedProperty,Star1,GetNamedProperty,JumpIfToBooleanFalse,LdaGlobal,Star2,GetNamedProperty,Star2,GetNamedProperty,Star2,GetNamedProperty,Star2,GetNamedProperty,Star1,LdaConstant,Star3,CallProperty1,Star1,LdaSmi,TestEqualStrict,JumpIfFalse,LdaGlobal,Star2,GetNamedProperty,Star2,GetNamedProperty,Star2,GetNamedProperty,Star2,GetNamedProperty,Star1,LdaConstant,Star3,CallProperty1,Star1,LdaSmi,TestEqualStrict,JumpIfFalse,LdaGlobal,Star1,GetNamedProperty,Star1,GetNamedProperty,Star1,GetNamedProperty,Star0,LdaImmutableCurrentContextSlot,Star1,CreateObjectLiteral,Star2,Ldar,DefineNamedOwnProperty,CallUndefinedReceiver1,LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_221528711341447783",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/include/integration.js",
+      "start_pos": 588,
+      "end_pos": 777,
+      "bytecodes": "Ldar,JumpIfToBooleanFalse,GetNamedProperty,JumpIfToBooleanFalse,LdaImmutableCurrentContextSlot,Star0,CallUndefinedReceiver1,Jump,LdaImmutableCurrentContextSlot,Star0,CallUndefinedReceiver1,LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_13352145996508718788",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/include/sync.js",
+      "start_pos": 2923,
+      "end_pos": 3588,
+      "bytecodes": "LdaModuleVariable,ThrowReferenceErrorIfHole,Star1,GetNamedProperty,Star0,CallProperty1,JumpIfToBooleanFalse,LdaGlobal,Star1,GetNamedProperty,Star1,GetNamedProperty,Star1,GetNamedProperty,Star0,CreateClosure,Star2,CallProperty1,LdaUndefined,Return"
+    },
+    {
+      "function_name": "nativeNotificationsSupported",
+      "injected_id": "fn_1252259315976097486",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/include/integration.js",
+      "start_pos": 4005,
+      "end_pos": 4086,
+      "bytecodes": "LdaImmutableCurrentContextSlot,Star0,LdaConstant,Star1,CallUndefinedReceiver2,Return"
+    },
+    {
+      "function_name": "isSupported",
+      "injected_id": "fn_4732628520686955733",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/include/integration.js",
+      "start_pos": 2602,
+      "end_pos": 2765,
+      "bytecodes": "GetNamedProperty,JumpIfToBooleanFalse,GetNamedProperty,Star0,GetNamedProperty,JumpIfToBooleanFalse,GetNamedProperty,Star1,GetNamedProperty,Star1,GetNamedProperty,Star0,CallProperty1,Star0,LdaSmi,TestEqualStrict,LogicalNot,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_10430088844299219921",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/extension.js",
+      "start_pos": 3360,
+      "end_pos": 6716,
+      "bytecodes": "CreateFunctionContextWithCells,PushContext,Ldar,StaCurrentContextSlotNoCell,LdaImmutableCurrentContextSlot,JumpIfToBooleanFalseConstant,LdaImmutableCurrentContextSlot,Star1,GetNamedProperty,JumpIfToBooleanFalseConstant,CreateArrayLiteral,Star2,LdaZero,Star3,LdaModuleVariable,ThrowReferenceErrorIfHole,Star4,GetNamedProperty,StaInArrayLiteral,LdaSmi,Star3,LdaModuleVariable,Star4,GetNamedProperty,StaInArrayLiteral,LdaSmi,Star3,LdaModuleVariable,Star4,GetNamedProperty,StaInArrayLiteral,GetNamedProperty,Star1,LdaImmutableCurrentContextSlot,Star3,GetNamedProperty,Star3,CallProperty1,Star1,LdaSmi,TestEqualStrict,JumpIfTrueConstant,LdaImmutableCurrentContextSlot,Star1,GetNamedProperty,Star1,LdaModuleVariable,Star2,GetNamedProperty,TestEqual,JumpIfTrue,LdaGlobal,Star2,Construct,Star2,GetNamedProperty,Star1,CallProperty0,Star1,LdaContextSlotNoCell,Star2,GetNamedProperty,Sub,Star1,LdaSmi,TestLessThan,JumpIfFalse,LdaModuleVariable,ThrowReferenceErrorIfHole,Star2,GetNamedProperty,Star1,LdaImmutableCurrentContextSlot,Star3,LdaContextSlotNoCell,Star4,GetNamedProperty,Star4,CallProperty2,JumpIfToBooleanFalse,LdaContextSlotNoCell,Star1,LdaGlobal,Star3,Construct,Star3,GetNamedProperty,Star2,CallProperty0,SetNamedProperty,LdaUndefined,Return,LdaModuleVariable,Star2,GetNamedProperty,Star2,GetNamedProperty,Star1,CreateClosure,Star3,CallProperty1,LdaGlobal,Star3,GetNamedProperty,Star3,GetNamedProperty,Star2,LdaModuleVariable,Star4,GetNamedProperty,Star4,LdaImmutableCurrentContextSlot,Star5,CallProperty2,Star2,GetNamedProperty,Star1,CreateClosure,Star3,CallProperty1,LdaImmutableCurrentContextSlot,Star1,GetNamedProperty,Star1,LdaModuleVariable,Star2,GetNamedProperty,TestEqualStrict,JumpIfFalseConstant,LdaImmutableCurrentContextSlot,Star1,GetNamedProperty,Star1,LdaModuleVariable,Star2,GetNamedProperty,GetKeyedProperty,Star1,LdaModuleVariable,Star2,GetNamedProperty,Star2,GetNamedProperty,TestEqualStrict,JumpIfFalse,LdaGlobal,Star1,CreateClosure,Star2,LdaSmi,Star3,CallUndefinedReceiver2,StaContextSlotNoCell,Jump,LdaContextSlotNoCell,JumpIfToBooleanFalse,LdaImmutableCurrentContextSlot,Star1,GetNamedProperty,Star1,LdaModuleVariable,Star2,GetNamedProperty,GetKeyedProperty,Star1,LdaModuleVariable,Star2,GetNamedProperty,Star2,GetNamedProperty,TestEqualStrict,JumpIfFalse,LdaContextSlotNoCell,Star1,GetNamedProperty,Star1,GetNamedProperty,Star1,LdaModuleVariable,Star2,GetNamedProperty,TestEqualStrict,JumpIfFalse,LdaContextSlotNoCell,Star1,GetNamedProperty,Star1,GetNamedProperty,Star1,LdaModuleVariable,Star2,GetNamedProperty,GetKeyedProperty,Star1,LdaImmutableCurrentContextSlot,Star2,GetNamedProperty,Star2,LdaModuleVariable,Star3,GetNamedProperty,GetKeyedProperty,TestEqualStrict,JumpIfFalse,LdaContextSlotNoCell,Star1,GetNamedProperty,Star1,GetNamedProperty,Star1,LdaModuleVariable,Star2,GetNamedProperty,GetKeyedProperty,Star1,LdaModuleVariable,Star2,GetNamedProperty,Star2,GetNamedProperty,TestEqualStrict,JumpIfFalse,LdaGlobal,Star1,LdaContextSlotNoCell,Star2,CallUndefinedReceiver1,LdaNull,StaContextSlotNoCell,LdaModuleVariable,ThrowReferenceErrorIfHole,Star2,GetNamedProperty,Star1,LdaImmutableCurrentContextSlot,Star3,CallProperty1,Jump,LdaModuleVariable,ThrowReferenceErrorIfHole,Star2,GetNamedProperty,Star1,LdaImmutableCurrentContextSlot,Star3,CallProperty1,CreateObjectLiteral,Star1,LdaImmutableCurrentContextSlot,DefineNamedOwnProperty,LdaGlobal,Star3,Construct,Star3,GetNamedProperty,Star2,CallProperty0,DefineNamedOwnProperty,Ldar,StaContextSlotNoCell,Jump,CreateArrayLiteral,Star2,LdaZero,Star3,LdaModuleVariable,Star4,GetNamedProperty,StaInArrayLiteral,LdaSmi,Star3,LdaModuleVariable,Star4,GetNamedProperty,StaInArrayLiteral,GetNamedProperty,Star1,LdaImmutableCurrentContextSlot,Star3,GetNamedProperty,Star3,CallProperty1,Star1,LdaSmi,TestEqual,JumpIfTrue,LdaModuleVariable,ThrowReferenceErrorIfHole,Star2,GetNamedProperty,Star1,LdaImmutableCurrentContextSlot,Star3,CallProperty1,LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_280013340830708938",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/extension.js",
+      "start_pos": 4200,
+      "end_pos": 4537,
+      "bytecodes": "LdaGlobal,Star1,GetNamedProperty,Star1,GetNamedProperty,Star0,CreateObjectLiteral,Star2,LdaConstant,Add,DefineNamedOwnProperty,CreateClosure,Star3,CallProperty2,LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_11926853553365834658",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/extension.js",
+      "start_pos": 4328,
+      "end_pos": 4521,
+      "bytecodes": "Ldar,JumpIfUndefinedOrNull,ToObject,ForInEnumerate,ForInPrepare,LdaZero,Star7,JumpIfForInDone,ForInNext,JumpIfUndefined,Star0,Star2,LdaGlobal,Star10,GetNamedProperty,Star10,GetNamedProperty,Star9,Ldar,GetEnumeratedKeyedProperty,Star11,GetNamedProperty,Star11,LdaImmutableCurrentContextSlot,Star12,CallProperty2,Star9,GetNamedProperty,Star8,CreateClosure,Star10,CallProperty1,ForInStep,JumpLoop,LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_4149672130489233995",
+      "script_url": "chrome-extension://gphhapmejobijbbhgpjhcjognlahblep/extension.js",
+      "start_pos": 4749,
+      "end_pos": 4758,
+      "bytecodes": "LdaUndefined,Return"
+    }
+  ],
+  "sm": [
+    {
+      "function_name": "localVars",
+      "injected_id": "localVars",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/02_local_vars/page.html",
+      "script_id": "1",
+      "bytecodes": "GetArg, SetLocal, Pop, GetArg, SetLocal, Pop, GetLocal, SetLocal, Pop, GetLocal, SetLocal, Pop, GetLocal, Return, RetRval,"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "vocab_size": 147,
+  "d_model": 64,
+  "nhead": 2,
+  "num_layers": 1,
+  "dim_feedforward": 256,
+  "max_len": 256,
+  "neg_ratio": 10.0,
+  "binary": true
+}

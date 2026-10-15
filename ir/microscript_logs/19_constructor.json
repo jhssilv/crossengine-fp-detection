@@ -1,0 +1,53 @@
+{
+  "script": "19_constructor",
+  "v8": [
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_6211134554334037388",
+      "script_url": "",
+      "start_pos": 0,
+      "end_pos": 0,
+      "bytecodes": "LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_17395714128628324696",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/19_constructor/page.html",
+      "start_pos": 0,
+      "end_pos": 182,
+      "bytecodes": "LdaConstant,Star1,Mov,CallRuntime,LdaGlobal,Star1,LdaSmi,Star2,LdaSmi,Star3,CallUndefinedReceiver2,Star0,Return"
+    },
+    {
+      "function_name": "constructor_",
+      "injected_id": "fn_7491775849997006264",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/19_constructor/page.html",
+      "start_pos": 75,
+      "end_pos": 160,
+      "bytecodes": "LdaGlobal,Star2,Ldar,Mov,Mov,Construct,Star0,LdaGlobal,Star2,LdaSmi,Star3,Ldar,Construct,Star1,GetNamedProperty,Star2,GetNamedProperty,Add,Return"
+    },
+    {
+      "function_name": "Point",
+      "injected_id": "fn_4864662799681580581",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/19_constructor/page.html",
+      "start_pos": 15,
+      "end_pos": 53,
+      "bytecodes": "Ldar,SetNamedProperty,Ldar,SetNamedProperty,LdaUndefined,Return"
+    }
+  ],
+  "sm": [
+    {
+      "function_name": "Point",
+      "injected_id": "Point",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/19_constructor/page.html",
+      "script_id": "1",
+      "bytecodes": "FunctionThis, SetLocal, Pop, GetLocal, GetArg, SetProp, Pop, GetLocal, GetArg, SetProp, Pop, RetRval,"
+    },
+    {
+      "function_name": "constructor_",
+      "injected_id": "constructor_",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/19_constructor/page.html",
+      "script_id": "2",
+      "bytecodes": "GetGName, IsConstructing, GetArg, GetArg, DupAt, New, SetLocal, Pop, GetGName, IsConstructing, Int8, DupAt, New, SetLocal, Pop, GetLocal, GetProp, GetLocal, GetProp, Add, Return, RetRval,"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "f1": 0.8735632183908046,
+  "precision": 0.900804289544236,
+  "recall": 0.8479213706999602,
+  "threshold": 0.7999999999999999,
+  "train_size": 420648,
+  "test_size": 105162,
+  "n_tfidf_features": 4723,
+  "context_feature_importances": {
+    "script_density": 2594,
+    "script_pred_fp_log": 2845,
+    "script_size_log": 2763
+  },
+  "baseline_f1": 0.853,
+  "delta": 0.0206,
+  "binary": true,
+  "oracle": false
+}

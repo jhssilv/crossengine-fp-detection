@@ -1,0 +1,44 @@
+{
+  "model_class": "TF-IDF bigrams + 5 context features (iter-3 style)",
+  "stats_file": "ir/script_stats_iter3.json",
+  "cross_engine_experiments": [
+    {
+      "train_engine": "Chromium",
+      "test_engine": "Firefox",
+      "train_size": 67966,
+      "test_fp": 24988,
+      "threshold": 0.05,
+      "precision": 0.640227309108372,
+      "recall": 0.5329113924050632,
+      "f1": 0.5816608493310064,
+      "features": "tfidf_bigrams+5_context"
+    },
+    {
+      "train_engine": "Firefox",
+      "test_engine": "Chromium",
+      "train_size": 310871,
+      "test_fp": 7535,
+      "threshold": 0.05,
+      "precision": 0.6022561380225614,
+      "recall": 0.5952256033578174,
+      "f1": 0.5987202322052906,
+      "features": "tfidf_bigrams+5_context"
+    }
+  ],
+  "mixed_model_per_engine": {
+    "Chromium": {
+      "precision": 0.9408831908831908,
+      "recall": 0.8685075608152532,
+      "f1": 0.9032478632478632,
+      "support": 1521,
+      "note": "held-out 20% test split, no training data leakage"
+    },
+    "Firefox": {
+      "precision": 0.9319787985865724,
+      "recall": 0.8779960053262317,
+      "f1": 0.9041823791566678,
+      "support": 6008,
+      "note": "held-out 20% test split, no training data leakage"
+    }
+  }
+}

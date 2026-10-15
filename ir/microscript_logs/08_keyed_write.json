@@ -1,0 +1,38 @@
+{
+  "script": "08_keyed_write",
+  "v8": [
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_6211134554334037388",
+      "script_url": "",
+      "start_pos": 0,
+      "end_pos": 0,
+      "bytecodes": "LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_2659505528029497774",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/08_keyed_write/page.html",
+      "start_pos": 0,
+      "end_pos": 122,
+      "bytecodes": "LdaConstant,Star1,Mov,CallRuntime,LdaGlobal,Star1,CreateArrayLiteral,Star2,LdaSmi,Star3,LdaSmi,Star4,CallUndefinedReceiver,Star0,Return"
+    },
+    {
+      "function_name": "keyedWrite",
+      "injected_id": "fn_10988495709859084032",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/08_keyed_write/page.html",
+      "start_pos": 20,
+      "end_pos": 90,
+      "bytecodes": "Ldar,SetKeyedProperty,LdaZero,Star1,LdaZero,GetKeyedProperty,AddSmi,SetKeyedProperty,Ldar,Return"
+    }
+  ],
+  "sm": [
+    {
+      "function_name": "keyedWrite",
+      "injected_id": "keyedWrite",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/08_keyed_write/page.html",
+      "script_id": "1",
+      "bytecodes": "GetArg, GetArg, GetArg, SetElem, Pop, GetArg, Zero, GetArg, Zero, GetElem, One, Add, SetElem, Pop, GetArg, Return, RetRval,"
+    }
+  ]
+}

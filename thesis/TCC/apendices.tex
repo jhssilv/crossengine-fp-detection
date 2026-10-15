@@ -1,0 +1,422 @@
+% ============================================================
+%  Apêndices
+% ============================================================
+\appendix
+
+% ============================================================
+\chapter{DICIONÁRIO DE EQUIVALÊNCIA COMPLETO DA REPRESENTAÇÃO INTERMEDIÁRIA}
+\label{ap:ir-dict}
+% ============================================================
+
+Este apêndice apresenta o dicionário de equivalência completo da representação
+intermediária (RI) cross-engine. O dicionário contém 145 tokens de RI, com 198
+mapeamentos de opcodes V8 (Ignition) e 236 mapeamentos de opcodes SpiderMonkey.
+Tokens marcados com~$\dagger$ não aparecem no corpus real de 68~milhões de funções
+e são excluídos do vocabulário TF-IDF ativo (\texttt{SCOPE\_INIT} e
+\texttt{WIDE\_PREFIX}); os demais 143 tokens com pelo menos uma ocorrência reduzem-se
+a \textbf{136 tokens ativos} após descarte de tokens raros pelo \texttt{min\_df}.
+A coluna ``---'' indica que o motor correspondente não possui opcode equivalente
+naquela categoria.
+
+\textbf{Nota sobre tokens de chamada com aridade.} O dicionário base preserva a
+separação de aridade para opcodes V8 de chamada de função: os tokens
+\texttt{CALL\_FUNC\_0}, \texttt{CALL\_FUNC\_1}, \texttt{CALL\_FUNC\_2},
+\texttt{CALL\_FUNC\_N}, \texttt{CALL\_METHOD\_0}, \texttt{CALL\_METHOD\_1},
+\texttt{CALL\_METHOD\_2} e \texttt{CALL\_METHOD\_N} são exclusivos do V8, pois o
+V8 emite opcodes distintos (\texttt{CallUndefinedReceiver0}, \texttt{CallProperty1},
+etc.) conforme o número de argumentos. O SpiderMonkey não distingue aridade nesse
+nível e mapeia todas as chamadas de função para \texttt{CALL\_FUNC} e
+\texttt{CALL\_SUPER}/\texttt{CALL\_ITER}. A Seção~\ref{sub:aridade} descreve um
+experimento que colapsa esses oito tokens V8 em dois (\texttt{CALL\_FUNC} e
+\texttt{CALL\_METHOD\_N}), confirmando que a aridade não acrescenta discriminação
+útil (F1 comparável com 4.623 features no modelo colapsado vs.\ 4.723 no base).
+
+{\footnotesize
+\begin{longtable}{@{}p{4.2cm}p{5.3cm}p{5.3cm}@{}}
+\caption{Dicionário de equivalência da RI cross-engine (145 tokens)}
+\label{tab:ap-ir-dict}\\
+\toprule
+\textbf{Token RI} & \textbf{V8 (Ignition)} & \textbf{SpiderMonkey} \\
+\midrule
+\endfirsthead
+\multicolumn{3}{c}{\footnotesize(continuação)} \\
+\toprule
+\textbf{Token RI} & \textbf{V8 (Ignition)} & \textbf{SpiderMonkey} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{l}{\textit{Carregamento de literais e constantes}} \\
+\midrule
+\texttt{LOAD\_INT} & \texttt{LdaSmi}, \texttt{LdaZero} & \texttt{Zero}, \texttt{One}, \texttt{Int8}, \texttt{Int32}, \texttt{Uint16}, \texttt{Uint24} \\
+\texttt{LOAD\_FLOAT} & --- & \texttt{Double} \\
+\texttt{LOAD\_BOOL} & \texttt{LdaTrue}, \texttt{LdaFalse} & \texttt{True}, \texttt{False} \\
+\texttt{LOAD\_NULL} & \texttt{LdaNull} & \texttt{Null} \\
+\texttt{LOAD\_UNDEFINED} & \texttt{LdaUndefined}, \texttt{LdaTheHole} & \texttt{Undefined}, \texttt{Hole}, \texttt{Uninitialized} \\
+\texttt{LOAD\_CONST} & \texttt{LdaConstant} & --- \\
+\texttt{LOAD\_STR} & --- & \texttt{String} \\
+\texttt{LOAD\_BIGINT} & --- & \texttt{BigInt} \\
+\texttt{LOAD\_SYMBOL} & --- & \texttt{Symbol} \\
+\midrule
+\multicolumn{3}{l}{\textit{Variáveis locais, globais e argumentos}} \\
+\midrule
+\texttt{LOAD\_LOCAL} & \texttt{Ldar} & \texttt{GetLocal} \\
+\texttt{STORE\_LOCAL} & \texttt{Star}, \texttt{Mov}, \texttt{Star0}--\texttt{Star15} & \texttt{SetLocal}, \texttt{InitLexical} \\
+\texttt{LOAD\_GLOBAL} & \texttt{LdaGlobal}, \texttt{LdaGlobalInsideTypeof}, \texttt{LdaLookupGlobalSlot}, \texttt{LdaLookupGlobalSlotInsideTypeof} & \texttt{GetGName}, \texttt{GetName}, \texttt{GetBoundName}, \texttt{GetIntrinsic} \\
+\texttt{STORE\_GLOBAL} & \texttt{StaGlobal} & \texttt{SetGName}, \texttt{StrictSetGName}, \texttt{SetName}, \texttt{StrictSetName}, \texttt{SetIntrinsic}, \texttt{InitGLexical} \\
+\texttt{LOAD\_ARG} & --- & \texttt{GetArg}, \texttt{GetFrameArg}, \texttt{GetActualArg} \\
+\texttt{STORE\_ARG} & --- & \texttt{SetArg} \\
+\texttt{LOAD\_THIS} & --- & \texttt{FunctionThis}, \texttt{ImplicitThis} \\
+\texttt{LOAD\_CALLEE} & --- & \texttt{EnvCallee}, \texttt{Callee} \\
+\texttt{LOAD\_GLOBAL\_THIS} & --- & \texttt{GlobalThis}, \texttt{NonSyntacticGlobalThis} \\
+\texttt{LOAD\_NEW\_TARGET} & --- & \texttt{NewTarget} \\
+\texttt{LOAD\_BUILTIN} & --- & \texttt{BuiltinObject} \\
+\texttt{BIND\_GLOBAL} & --- & \texttt{BindUnqualifiedGName} \\
+\texttt{BIND\_NAME} & --- & \texttt{BindUnqualifiedName}, \texttt{BindName}, \texttt{BindVar} \\
+\midrule
+\multicolumn{3}{l}{\textit{Variáveis de closure}} \\
+\midrule
+\texttt{LOAD\_CLOSURE\_VAR} & \texttt{LdaContextSlot}, \texttt{LdaCurrentContextSlot}, \texttt{LdaImmutableContextSlot}, \texttt{LdaImmutableCurrentContextSlot}, \texttt{LdaContextSlotNoCell}, \texttt{LdaCurrentContextSlotNoCell}, \texttt{LdaLookupSlot}, \texttt{LdaLookupContextSlot}, \texttt{LdaLookupContextSlotNoCell}, \texttt{LdaLookupSlotInsideTypeof}, \texttt{LdaLookupContextSlotInsideTypeof}, \texttt{LdaLookupContextSlotNoCellInsideTypeof}, \texttt{LdaModuleVariable} & \texttt{GetAliasedVar}, \texttt{GetAliasedDebugVar} \\
+\texttt{STORE\_CLOSURE\_VAR} & \texttt{StaContextSlot}, \texttt{StaCurrentContextSlot}, \texttt{StaContextSlotNoCell}, \texttt{StaCurrentContextSlotNoCell}, \texttt{StaLookupSlot}, \texttt{StaModuleVariable} & \texttt{SetAliasedVar}, \texttt{InitAliasedLexical} \\
+\midrule
+\multicolumn{3}{l}{\textit{Acesso a propriedades}} \\
+\midrule
+\texttt{GET\_NAMED\_PROP} & \texttt{GetNamedProperty}, \texttt{GetNamedPropertyFromSuper} & \texttt{GetProp}, \texttt{GetPropSuper} \\
+\texttt{SET\_NAMED\_PROP} & \texttt{SetNamedProperty} & \texttt{SetProp}, \texttt{StrictSetProp}, \texttt{SetPropSuper}, \texttt{StrictSetPropSuper}, \texttt{SetElemSuper}, \texttt{StrictSetElemSuper} \\
+\texttt{GET\_KEYED\_PROP} & \texttt{GetKeyedProperty}, \texttt{GetEnumeratedKeyedProperty} & \texttt{GetElem}, \texttt{GetElemSuper} \\
+\texttt{SET\_KEYED\_PROP} & \texttt{SetKeyedProperty} & \texttt{SetElem}, \texttt{StrictSetElem} \\
+\texttt{DEFINE\_OBJ\_PROP} & \texttt{DefineNamedOwnProperty} & \texttt{InitProp}, \texttt{InitHiddenProp}, \texttt{InitPropGetter}, \texttt{InitPropSetter}, \texttt{InitHiddenPropGetter}, \texttt{InitHiddenPropSetter}, \texttt{InitLockedProp}, \texttt{InitHiddenElemGetter}, \texttt{InitHiddenElemSetter} \\
+\texttt{SET\_ARR\_ELEM} & \texttt{StaInArrayLiteral}, \texttt{DefineKeyedOwnProperty}, \texttt{DefineKeyedOwnPropertyInLiteral} & \texttt{InitElem}, \texttt{InitElemArray}, \texttt{InitElemInc}, \texttt{InitHiddenElem}, \texttt{InitLockedElem} \\
+\texttt{SET\_PROTO} & \texttt{SetPrototypeProperties} & \texttt{MutateProto} \\
+\texttt{SET\_FUN\_NAME} & --- & \texttt{SetFunName} \\
+\midrule
+\multicolumn{3}{l}{\textit{Operações aritméticas}} \\
+\midrule
+\texttt{BINARY\_ADD} & \texttt{Add}, \texttt{AddSmi}, \texttt{Add\_StringConstant\_Internalize} & \texttt{Add} \\
+\texttt{BINARY\_SUB} & \texttt{Sub}, \texttt{SubSmi} & \texttt{Sub} \\
+\texttt{BINARY\_MUL} & \texttt{Mul}, \texttt{MulSmi} & \texttt{Mul} \\
+\texttt{BINARY\_DIV} & \texttt{Div}, \texttt{DivSmi} & \texttt{Div} \\
+\texttt{BINARY\_MOD} & \texttt{Mod}, \texttt{ModSmi} & \texttt{Mod} \\
+\texttt{BINARY\_POW} & \texttt{Exp}, \texttt{ExpSmi} & \texttt{Pow} \\
+\midrule
+\multicolumn{3}{l}{\textit{Operações bitwise}} \\
+\midrule
+\texttt{BIT\_OR} & \texttt{BitwiseOr}, \texttt{BitwiseOrSmi} & \texttt{BitOr} \\
+\texttt{BIT\_AND} & \texttt{BitwiseAnd}, \texttt{BitwiseAndSmi} & \texttt{BitAnd} \\
+\texttt{BIT\_XOR} & \texttt{BitwiseXor}, \texttt{BitwiseXorSmi} & \texttt{BitXor} \\
+\texttt{BIT\_SHL} & \texttt{ShiftLeft}, \texttt{ShiftLeftSmi} & \texttt{Lsh} \\
+\texttt{BIT\_SHR} & \texttt{ShiftRight}, \texttt{ShiftRightSmi} & \texttt{Rsh} \\
+\texttt{BIT\_USHR} & \texttt{ShiftRightLogical}, \texttt{ShiftRightLogicalSmi} & \texttt{Ursh} \\
+\midrule
+\multicolumn{3}{l}{\textit{Operadores unários}} \\
+\midrule
+\texttt{UNARY\_NEG} & \texttt{Negate} & \texttt{Neg} \\
+\texttt{UNARY\_NOT} & \texttt{LogicalNot}, \texttt{ToBooleanLogicalNot} & \texttt{Not} \\
+\texttt{UNARY\_BITNOT} & \texttt{BitwiseNot} & \texttt{BitNot} \\
+\texttt{INC} & \texttt{Inc} & \texttt{Inc} \\
+\texttt{DEC} & \texttt{Dec} & \texttt{Dec} \\
+\midrule
+\multicolumn{3}{l}{\textit{Comparações}} \\
+\midrule
+\texttt{CMP\_EQ} & \texttt{TestEqual} & \texttt{Eq} \\
+\texttt{CMP\_NEQ} & --- & \texttt{Ne} \\
+\texttt{CMP\_SEQ} & \texttt{TestEqualStrict}, \texttt{TestReferenceEqual} & \texttt{StrictEq}, \texttt{StrictConstantEq} \\
+\texttt{CMP\_SNEQ} & --- & \texttt{StrictNe}, \texttt{StrictConstantNe} \\
+\texttt{CMP\_LT} & \texttt{TestLessThan} & \texttt{Lt} \\
+\texttt{CMP\_LTE} & \texttt{TestLessThanOrEqual} & \texttt{Le} \\
+\texttt{CMP\_GT} & \texttt{TestGreaterThan} & \texttt{Gt} \\
+\texttt{CMP\_GTE} & \texttt{TestGreaterThanOrEqual} & \texttt{Ge} \\
+\midrule
+\multicolumn{3}{l}{\textit{Tipo, identidade e coerções}} \\
+\midrule
+\texttt{TYPEOF} & \texttt{TypeOf} & \texttt{Typeof}, \texttt{TypeofExpr} \\
+\texttt{TYPEOF\_EQ} & \texttt{TestTypeOf} & \texttt{TypeofEq} \\
+\texttt{INSTANCEOF} & \texttt{TestInstanceOf} & \texttt{Instanceof} \\
+\texttt{IN\_OP} & \texttt{TestIn} & \texttt{HasOwn}, \texttt{In} \\
+\texttt{TEST\_NULL} & \texttt{TestNull} & --- \\
+\texttt{TEST\_UNDEFINED} & \texttt{TestUndefined} & --- \\
+\texttt{TEST\_NULL\_OR\_UNDEFINED} & --- & \texttt{IsNullOrUndefined} \\
+\texttt{TEST\_UNDETECTABLE} & \texttt{TestUndetectable} & --- \\
+\texttt{TO\_NUMBER} & \texttt{ToNumber}, \texttt{ToNumeric} & \texttt{Pos}, \texttt{ToNumeric} \\
+\texttt{TO\_STRING} & \texttt{ToString} & \texttt{ToString} \\
+\texttt{TO\_BOOL} & \texttt{ToBoolean} & --- \\
+\texttt{TO\_NAME} & \texttt{ToName} & \texttt{ToPropertyKey} \\
+\texttt{TO\_OBJ} & \texttt{ToObject} & \texttt{CheckObjCoercible} \\
+\midrule
+\multicolumn{3}{l}{\textit{Fluxo de controle e saltos}} \\
+\midrule
+\texttt{JMP} & \texttt{Jump}, \texttt{JumpConstant} & \texttt{Goto} \\
+\texttt{JMP\_LOOP} & \texttt{JumpLoop} & \texttt{LoopHead} \\
+\texttt{JMP\_IF\_TRUE} & \texttt{JumpIfTrue}, \texttt{JumpIfTrueConstant} & \texttt{JumpIfTrue} \\
+\texttt{JMP\_IF\_FALSE} & \texttt{JumpIfFalse}, \texttt{JumpIfFalseConstant} & \texttt{JumpIfFalse} \\
+\texttt{JMP\_IF\_NULL} & \texttt{JumpIfNull}, \texttt{JumpIfNullConstant} & --- \\
+\texttt{JMP\_IF\_NOT\_NULL} & \texttt{JumpIfNotNull}, \texttt{JumpIfNotNullConstant} & --- \\
+\texttt{JMP\_IF\_UNDEFINED} & \texttt{JumpIfUndefined}, \texttt{JumpIfUndefinedConstant} & --- \\
+\texttt{JMP\_IF\_NOT\_UNDEFINED} & \texttt{JumpIfNotUndefined}, \texttt{JumpIfNotUndefinedConstant} & --- \\
+\texttt{JMP\_IF\_OBJ} & \texttt{JumpIfJSReceiver}, \texttt{JumpIfJSReceiverConstant} & --- \\
+\texttt{JUMP\_TARGET} & --- & \texttt{JumpTarget} \\
+\texttt{LOGICAL\_AND} & \texttt{JumpIfToBooleanFalse}, \texttt{JumpIfToBooleanFalseConstant} & \texttt{And} \\
+\texttt{LOGICAL\_OR} & \texttt{JumpIfToBooleanTrue}, \texttt{JumpIfToBooleanTrueConstant} & \texttt{Or} \\
+\texttt{LOGICAL\_NC} & \texttt{JumpIfUndefinedOrNull}, \texttt{JumpIfUndefinedOrNullConstant} & \texttt{Coalesce} \\
+\texttt{SWITCH} & \texttt{SwitchOnSmiNoFeedback} & \texttt{TableSwitch} \\
+\texttt{SWITCH\_CASE} & --- & \texttt{Case} \\
+\texttt{SWITCH\_DEFAULT} & --- & \texttt{Default} \\
+\midrule
+\multicolumn{3}{l}{\textit{Chamadas de função e método}} \\
+\midrule
+\texttt{CALL\_FUNC} & --- & \texttt{Call}, \texttt{CallContent}, \texttt{CallIgnoresRv}, \texttt{SpreadCall}, \texttt{SpreadEval}, \texttt{StrictSpreadEval}, \texttt{Eval}, \texttt{StrictEval}, \texttt{OptimizeSpreadCall} \\
+\texttt{CALL\_FUNC\_0} & \texttt{CallUndefinedReceiver0} & --- \\
+\texttt{CALL\_FUNC\_1} & \texttt{CallUndefinedReceiver1} & --- \\
+\texttt{CALL\_FUNC\_2} & \texttt{CallUndefinedReceiver2} & --- \\
+\texttt{CALL\_FUNC\_N} & \texttt{CallUndefinedReceiver}, \texttt{CallAnyReceiver}, \texttt{CallWithSpread} & --- \\
+\texttt{CALL\_METHOD\_0} & \texttt{CallProperty0} & --- \\
+\texttt{CALL\_METHOD\_1} & \texttt{CallProperty1} & --- \\
+\texttt{CALL\_METHOD\_2} & \texttt{CallProperty2} & --- \\
+\texttt{CALL\_METHOD\_N} & \texttt{CallProperty} & --- \\
+\texttt{CALL\_NEW} & \texttt{Construct}, \texttt{ConstructWithSpread}, \texttt{ConstructForwardAllArgs}, \texttt{FindNonDefaultConstructorOrConstruct} & \texttt{New}, \texttt{SpreadNew}, \texttt{NewContent} \\
+\texttt{CALL\_RUNTIME} & \texttt{CallRuntime}, \texttt{CallRuntimeForPair}, \texttt{CallJSRuntime}, \texttt{InvokeIntrinsic} & --- \\
+\texttt{CALL\_SUPER} & --- & \texttt{SuperCall}, \texttt{SpreadSuperCall} \\
+\texttt{CALL\_ITER} & --- & \texttt{CallIter}, \texttt{CallContentIter} \\
+\midrule
+\multicolumn{3}{l}{\textit{Criação de objetos e funções}} \\
+\midrule
+\texttt{CREATE\_OBJ} & \texttt{CreateObjectLiteral}, \texttt{CreateEmptyObjectLiteral}, \texttt{CloneObject} & \texttt{NewObject}, \texttt{NewInit}, \texttt{Object}, \texttt{ObjWithProto} \\
+\texttt{CREATE\_ARR} & \texttt{CreateArrayLiteral}, \texttt{CreateEmptyArrayLiteral}, \texttt{CreateArrayFromIterable} & \texttt{NewArray} \\
+\texttt{CREATE\_CLOSURE} & \texttt{CreateClosure} & \texttt{Lambda}, \texttt{FunWithProto} \\
+\texttt{CREATE\_REGEXP} & \texttt{CreateRegExpLiteral} & \texttt{RegExp} \\
+\texttt{CREATE\_SCOPE} & \texttt{CreateFunctionContext}, \texttt{CreateFunctionContextWithCells}, \texttt{CreateBlockContext}, \texttt{CreateCatchContext}, \texttt{CreateWithContext}, \texttt{CreateEvalContext} & \texttt{PushLexicalEnv}, \texttt{PushVarEnv}, \texttt{EnterWith}, \texttt{PushClassBodyEnv} \\
+\texttt{CREATE\_ARGUMENTS} & \texttt{CreateMappedArguments}, \texttt{CreateUnmappedArguments} & \texttt{Arguments} \\
+\texttt{CREATE\_REST} & \texttt{CreateRestParameter} & \texttt{Rest} \\
+\texttt{GET\_ITER} & \texttt{GetIterator} & \texttt{ToAsyncIter}, \texttt{OptimizeGetIterator} \\
+\texttt{GET\_TEMPLATE} & \texttt{GetTemplateObject} & \texttt{CallSiteObj} \\
+\texttt{GET\_SUPER} & \texttt{GetSuperConstructor} & \texttt{SuperFun}, \texttt{SuperBase} \\
+\midrule
+\multicolumn{3}{l}{\textit{Exceções e verificações}} \\
+\midrule
+\texttt{THROW} & \texttt{Throw}, \texttt{ReThrow} & \texttt{Throw}, \texttt{ThrowMsg}, \texttt{ThrowSetConst}, \texttt{ThrowWithStack} \\
+\texttt{TRY\_START} & --- & \texttt{Try} \\
+\texttt{TRY\_FINALLY} & --- & \texttt{Finally} \\
+\texttt{CATCH\_EXCEPTION} & --- & \texttt{Exception}, \texttt{ExceptionAndStack} \\
+\texttt{SET\_EXCEPTION} & \texttt{SetPendingMessage} & --- \\
+\texttt{TDZ\_CHECK} & \texttt{ThrowReferenceErrorIfHole}, \texttt{ThrowSuperNotCalledIfHole}, \texttt{ThrowSuperAlreadyCalledIfNotHole}, \texttt{ThrowIfNotSuperConstructor} & \texttt{CheckAliasedLexical}, \texttt{CheckLexical} \\
+\midrule
+\multicolumn{3}{l}{\textit{Escopo e iteração for-in}} \\
+\midrule
+\texttt{PUSH\_SCOPE} & \texttt{PushContext} & \texttt{FreshenLexicalEnv}, \texttt{RecreateLexicalEnv} \\
+\texttt{POP\_SCOPE} & \texttt{PopContext} & \texttt{PopLexicalEnv}, \texttt{DebugLeaveLexicalEnv}, \texttt{LeaveWith} \\
+\texttt{SCOPE\_INIT}$\dagger$ & --- & \texttt{GlobalOrEvalDeclInstantiation} \\
+\texttt{FOR\_IN\_START} & \texttt{ForInEnumerate} & \texttt{Iter} \\
+\texttt{FOR\_IN\_PREP} & \texttt{ForInPrepare} & --- \\
+\texttt{FOR\_IN\_NEXT} & \texttt{ForInNext} & \texttt{MoreIter} \\
+\texttt{FOR\_IN\_STEP} & \texttt{ForInStep} & --- \\
+\texttt{FOR\_IN\_DONE} & \texttt{JumpIfForInDone}, \texttt{JumpIfForInDoneConstant} & \texttt{IsNoIter} \\
+\texttt{FOR\_IN\_END} & --- & \texttt{EndIter}, \texttt{CloseIter} \\
+\midrule
+\multicolumn{3}{l}{\textit{Generators, async e miscelânea}} \\
+\midrule
+\texttt{GEN\_START} & --- & \texttt{Generator} \\
+\texttt{GEN\_YIELD} & \texttt{SuspendGenerator} & \texttt{InitialYield}, \texttt{Yield}, \texttt{FinalYieldRval} \\
+\texttt{GEN\_RESUME} & \texttt{ResumeGenerator}, \texttt{SwitchOnGeneratorState} & \texttt{AfterYield}, \texttt{Resume}, \texttt{ResumeKind}, \texttt{CheckResumeKind}, \texttt{IsGenClosing} \\
+\texttt{ASYNC\_AWAIT} & --- & \texttt{Await}, \texttt{AsyncAwait}, \texttt{CanSkipAwait}, \texttt{MaybeExtractAwaitValue} \\
+\texttt{ASYNC\_RESOLVE} & --- & \texttt{AsyncResolve} \\
+\texttt{ASYNC\_REJECT} & --- & \texttt{AsyncReject} \\
+\texttt{GET\_ARGS\_LEN} & --- & \texttt{ArgumentsLength} \\
+\texttt{RETURN} & \texttt{Return} & \texttt{Return}, \texttt{RetRval}, \texttt{SetRval}, \texttt{GetRval} \\
+\texttt{NOP} & --- & \texttt{Nop}, \texttt{Lineno}, \texttt{NopDestructuring}, \texttt{NopIsAssignOp}, \texttt{ForceInterpreter}, \texttt{TryDestructuring} \\
+\texttt{POP} & --- & \texttt{Pop}, \texttt{PopN} \\
+\texttt{DUP} & --- & \texttt{Dup2}, \texttt{Dup}, \texttt{DupAt} \\
+\texttt{SWAP} & --- & \texttt{Swap}, \texttt{Pick}, \texttt{Unpick} \\
+\texttt{IS\_CONSTRUCTING} & --- & \texttt{IsConstructing} \\
+\texttt{CHECK\_THIS} & --- & \texttt{CheckThis}, \texttt{CheckThisReinit} \\
+\texttt{CLASS\_CHECK} & --- & \texttt{CheckClassHeritage}, \texttt{CheckReturn}, \texttt{CheckIsObj}, \texttt{CheckPrivateField}, \texttt{NewPrivateName} \\
+\texttt{INIT\_HOME} & --- & \texttt{InitHomeObject} \\
+\texttt{DELETE\_PROP} & \texttt{DeletePropertyStrict}, \texttt{DeletePropertySloppy} & \texttt{DelProp}, \texttt{StrictDelProp}, \texttt{DelElem}, \texttt{StrictDelElem}, \texttt{DelName} \\
+\texttt{VOID\_OP} & --- & \texttt{Void} \\
+\texttt{DEBUGGER} & --- & \texttt{Debugger} \\
+\texttt{IMPORT} & --- & \texttt{DynamicImport}, \texttt{ImportMeta}, \texttt{GetImport} \\
+\texttt{WIDE\_PREFIX}$\dagger$ & \texttt{Wide}, \texttt{ExtraWide} & --- \\
+\bottomrule
+\end{longtable}
+}
+
+\noindent\footnotesize{$\dagger$ Token não observado no corpus real de 68~milhões
+de funções; excluído do vocabulário TF-IDF ativo.}
+
+% ============================================================
+\chapter{DETALHES TÉCNICOS DA INSTRUMENTAÇÃO DOS MOTORES}
+\label{ap:instrumentacao}
+% ============================================================
+
+Este apêndice apresenta os detalhes de implementação da instrumentação do V8 e
+do SpiderMonkey, complementando a descrição conceitual do
+Capítulo~\ref{cap:arquitetura}.
+
+% -----------------------------------------------------------
+\section{V8: código de instrumentação}
+\label{ap:v8-code}
+
+A instrumentação é inserida no fim da função \texttt{DoFinalizeJobImpl} em
+\path{v8/src/interpreter/interpreter.cc}. O bloco a seguir mostra o cálculo do
+\texttt{injected\_id} via FNV-1a de 64 bits, a extração de bytecodes e a emissão
+para \texttt{stderr}.
+
+\textbf{Identificador estável por função (FNV-1a 64 bits):}
+
+\begin{lstlisting}[language=C++]
+const std::string seed =
+    "v8/" + script_url_str + "/" +
+    std::to_string(start_pos) + "/" + std::to_string(end_pos);
+const std::string injected_id = "fn_" + std::to_string(FNV1a64(seed));
+\end{lstlisting}
+
+\textbf{Extração de bytecodes via \texttt{BytecodeArrayIterator}:}
+
+\begin{lstlisting}[language=C++]
+std::string bytecode_sequence;
+interpreter::BytecodeArrayIterator it(bytecodes);
+while (!it.done()) {
+    bytecode_sequence +=
+        interpreter::Bytecodes::ToString(it.current_bytecode());
+    bytecode_sequence += ',';
+    it.Advance();
+}
+\end{lstlisting}
+
+\textbf{Emissão serializada para \texttt{stderr} com mutex:}
+
+\begin{lstlisting}[language=C++]
+{
+    std::lock_guard<std::mutex> lock(v8log_mutex);
+    std::cerr
+        << "[V8Log] {"
+        << "\"injected_id\":\"" << injected_id << "\","
+        << "\"script_url\":\""
+        << json_escape(script_url_str) << "\","
+        << "\"script_id\":"  << script_id  << ","
+        << "\"start_pos\":"  << start_pos  << ","
+        << "\"end_pos\":"    << end_pos    << ","
+        << "\"func_name\":\""
+        << json_escape(func_name_str) << "\","
+        << "\"bytecodes\":\""
+        << json_escape(bytecode_sequence) << "\""
+        << "}\n" << std::flush;
+}
+\end{lstlisting}
+
+% -----------------------------------------------------------
+\section{SpiderMonkey: parser do log}
+\label{ap:sm-parser}
+
+A função \texttt{parse\_spidermonkey\_batch()} no crawler Firefox processa
+o arquivo \texttt{geckodriver\_raw.log} ao final de cada batch de sites.
+Os passos do parser são:
+
+\begin{enumerate}
+  \item Identifica blocos delimitados por \texttt{[SpiderMonkey Log]};
+  \item Extrai os campos \texttt{Script URL}, \texttt{Internal Index},
+    \texttt{Function name} e \texttt{Bytecode} de cada bloco;
+  \item Descarta registros cujo \texttt{Script URL} comece com prefixos internos
+    do Firefox: \texttt{resource://}, \texttt{chrome://},
+    \texttt{moz-extension://}, \texttt{moz-src:}, \texttt{file:},
+    \texttt{moz-nullprincipal:}, \texttt{<anonymous code>}, \texttt{about:},
+    \texttt{data:};
+  \item Deduplica registros via hash FNV-1a 64 bits de
+    \texttt{(script\_url, func\_name)}, tanto dentro do batch corrente
+    quanto em relação a batches anteriores da mesma sessão;
+  \item Escreve os registros novos no arquivo
+    \texttt{firefox\_sm\_bytecodes.jsonl.gz} no formato JSONL unificado.
+\end{enumerate}
+
+% ============================================================
+\chapter{DETALHES DOS CRAWLERS E EXTENSÃO DE NAVEGADOR}
+\label{ap:crawler-ext}
+% ============================================================
+
+Este apêndice reúne os detalhes de implementação dos crawlers Python e da
+extensão de navegador compartilhada, complementando a descrição conceitual do
+Capítulo~\ref{cap:arquitetura}.
+
+% -----------------------------------------------------------
+\section{Formato de emissão do SpiderMonkey}
+\label{ap:sm-formato}
+
+Cada função compilada pelo SpiderMonkey instrumentado gera um bloco de texto
+no \texttt{stderr} com o seguinte formato:
+
+\begin{lstlisting}[language={}]
+[SpiderMonkey Log]
+Script URL: https://example.com/bundle.js
+Internal Index: 7
+Function name: canvasFingerprint
+Bytecode: [FunctionThis, SetLocal, Pop, GetGName, ...]
+\end{lstlisting}
+
+% -----------------------------------------------------------
+\section{Padrões de hooking de protótipos na extensão}
+\label{ap:ext-hook}
+
+A interceptação de métodos é implementada via substituição direta no protótipo:
+
+\begin{lstlisting}[language=JavaScript]
+const _original = API.prototype.method;
+API.prototype.method = function () {
+    capture('categoria.metodo');
+    return _original.apply(this, arguments);
+};
+\end{lstlisting}
+
+Propriedades somente leitura (getters de \texttt{Screen} e \texttt{Navigator})
+são redefinidas via \texttt{Object.defineProperty} com preservação do getter
+original:
+
+\begin{lstlisting}[language=JavaScript]
+Object.defineProperty(Screen.prototype, 'colorDepth', {
+    get: function () {
+        capture('screen.colorDepth');
+        return desc.get.call(this);
+    },
+    configurable: true,
+});
+\end{lstlisting}
+
+% -----------------------------------------------------------
+\section{Parser de stack trace e captura de pilha multi-frame}
+\label{ap:ext-stack}
+
+O parser de frames suporta os formatos de stack trace de ambos os motores:
+
+\begin{lstlisting}[language=JavaScript]
+// V8/Chrome: "    at funcName (url:line:col)"
+const v8Named = frame.match(
+    /at ([^(@]+)\s+\((.+):(\d+):(\d+)\)/);
+
+// Gecko/Firefox: "funcName@url:line:col"
+const geckoNamed = frame.match(
+    /^([^@\s]+)@(https?:\/\/.+):(\d+):(\d+)$/);
+\end{lstlisting}
+
+Para evitar interferência de bibliotecas de fingerprinting que sobrescrevem
+\texttt{Error.prepareStackTrace} (como o CreepJS), a captura preserva e restaura
+o valor original antes de instanciar o \texttt{Error}:
+
+\begin{lstlisting}[language=JavaScript]
+function getRawStack() {
+    const saved = Error.prepareStackTrace;
+    Error.prepareStackTrace = undefined;
+    const err = new Error();
+    Error.prepareStackTrace = saved;
+    return err.stack || '';
+}
+\end{lstlisting}
+
+% -----------------------------------------------------------
+\section{User-Agent de spoofing}
+\label{ap:ua}
+
+O crawler Firefox configura o User-Agent para o valor idêntico ao do
+Chromium~131, garantindo que os sites sirvam o mesmo bundle JavaScript aos
+dois navegadores:
+
+\begin{lstlisting}[language={}]
+Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36
+(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+\end{lstlisting}

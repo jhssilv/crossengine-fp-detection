@@ -1,0 +1,16 @@
+{
+  "is_fp": {
+    "precision": 0.8335144271399252,
+    "recall": 0.8346228239845261,
+    "f1-score": 0.8340682573240713,
+    "support": 8272.0
+  },
+  "macro_f1": 0.8340682573240713,
+  "micro_f1": 0.8340682573240713,
+  "train_size": 391752,
+  "test_size": 97939,
+  "neg_ratio": 10.0,
+  "n_estimators": 200,
+  "vocab_size": 136,
+  "binary": true
+}

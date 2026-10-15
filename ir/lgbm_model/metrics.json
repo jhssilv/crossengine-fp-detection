@@ -1,0 +1,24 @@
+{
+  "is_fp_default": {
+    "precision": 0.6671002601560937,
+    "recall": 0.8855093637933324,
+    "f1-score": 0.7609427609427609,
+    "support": 7529.0
+  },
+  "is_fp_tuned": {
+    "precision": 0.8879576532862814,
+    "recall": 0.8020985522645769,
+    "f1-score": 0.8428471737613399,
+    "support": 7529.0
+  },
+  "macro_f1": 0.8428471737613399,
+  "micro_f1": 0.8428471737613399,
+  "threshold": 0.7999999999999999,
+  "train_size": 420648,
+  "test_size": 105162,
+  "neg_ratio": 10.0,
+  "ngram_max": 2,
+  "n_estimators": 500,
+  "n_features": 4723,
+  "binary": true
+}

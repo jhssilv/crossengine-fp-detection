@@ -1,0 +1,193 @@
+% ============================================================
+%  Capítulo 1 — Introdução
+% ============================================================
+\chapter{INTRODUÇÃO}
+\label{cap:intro}
+
+\section{Contextualização e motivação}
+\label{sec:contexto}
+
+A rastreabilidade de usuários na web deixou de depender exclusivamente de
+cookies há mais de uma década. Técnicas de browser fingerprinting
+(identificação de usuários por meio de atributos coletados silenciosamente pelo
+navegador) tornaram-se o principal mecanismo de rastreamento persistente
+utilizado por scripts de terceiros, redes de anúncios e serviços de análise de
+audiência \cite{eckersley2010}. Ao contrário dos cookies, o
+fingerprint não é armazenado no dispositivo do usuário e não pode ser
+apagado com a limpeza do histórico ou com o modo de navegação privada.
+
+Um fingerprint de navegador é construído a partir da combinação de dezenas
+de propriedades mensuráveis: o resultado da renderização de formas geométricas na
+API Canvas, o comportamento numérico do processamento de áudio via Web Audio API,
+os parâmetros de capacidade gráfica reportados pela API WebGL, as dimensões e
+resolução de cor da tela, as propriedades de hardware expostas pelo objeto
+\texttt{navigator} (\texttt{hardwareConcurrency}, \texttt{deviceMemory},
+\texttt{languages}, \texttt{platform}) e, em alguns casos, o endereço IP local
+revelado pelo protocolo WebRTC. A combinação desses vetores é suficientemente
+discriminativa para identificar mais de 99\% dos visitantes de um mesmo site de
+forma unívoca \cite{laperdrix2016}.
+
+Bibliotecas de fingerprinting de código aberto, como FingerprintJS e
+CreepJS, são implantadas em milhares de sites da web de alta visitação. Essas
+bibliotecas empacotam os mecanismos de coleta em funções JavaScript que executam
+integralmente dentro do processo do navegador, tornando a detecção por filtragem
+de URL inadequada: o mesmo bundle JavaScript pode conter tanto lógica
+legítima de interface quanto rotinas de identificação oculta.
+
+A abordagem mais direta para detectar fingerprinting no nível do código é
+analisar os bytecodes gerados pelo motor JavaScript para cada função, uma vez que
+operações como \texttt{canvas.toDataURL}, \texttt{AudioContext.createOscillator} e
+\texttt{navigator.hardwareConcurrency} produzem sequências de bytecodes observáveis
+sem que seja necessário executar ou instrumentar a função em nível de aplicação.
+ByteDefender \cite{nikkhahbahrami2025} demonstrou que sequências de bytecodes do
+motor V8, utilizado pelo Chromium, são discriminativas o suficiente para
+detectar funções de fingerprinting com F1 $\approx 0{,}95$ usando um
+classificador treinado sobre uma representação bag-of-ngrams dos opcodes.
+
+Contudo, o V8 é apenas um dos dois grandes motores JavaScript em uso em
+navegadores de desktop. O Firefox utiliza o SpiderMonkey, cuja arquitetura interna
+(estratégias de alocação de registradores, estrutura do grafo de controle de
+fluxo, hierarquia de representações intermediárias) difere substancialmente da
+do V8. Um modelo treinado sobre bytecodes brutos do V8 não transfere para o
+SpiderMonkey: os conjuntos de opcodes são disjuntos, e as sequências produzidas
+pelo mesmo código JavaScript diferem em estrutura e distribuição entre os dois
+motores. A consequência prática é que a abordagem do ByteDefender requer
+retreinamento completo para cada motor-alvo, o que representa uma barreira de
+engenharia significativa para qualquer detector implantado em um ecossistema de
+navegadores heterogêneo.
+
+Este trabalho endereça diretamente essa limitação. A contribuição central é o
+projeto e a validação de uma \textbf{representação intermediária (RI)
+cross-engine} que mapeia os opcodes do V8 (Ignition) e do SpiderMonkey para um
+vocabulário compartilhado de 145 tokens, com cobertura de 99,82\% dos tokens
+reais observados em um crawl de 68 milhões de funções JavaScript. Sobre
+essa RI, o LightGBM com bigramas atinge F1~=~0,843 como modelo de referência da linha principal.
+Uma estratégia de inferência iterativa,
+que recomputa contagens de funções previstas em múltiplos limiares como features de
+contexto de script, eleva o resultado implantável para \textbf{F1~=~0,904} sem
+nenhum rótulo externo. O modelo conjunto com contexto iterativo, treinado em dados de ambos os motores,
+atinge F1~=~0,903 no Chromium e F1~=~0,904 no Firefox a partir de um único
+conjunto de pesos, sem retreinamento por motor.
+
+O custo da portabilidade entre motores é de aproximadamente 5 pontos de F1 em
+relação ao ByteDefender (F1~=~0,904 versus $\approx$0,950), refletindo a perda de
+informação causada pela abstração da RI e pelo ruído distribucional da presença de
+dois motores no corpus de treinamento. Parte desse custo também decorre de uma
+tarefa estritamente mais difícil: este trabalho inclui funções anônimas, sete
+categorias de fingerprinting (contra quatro do ByteDefender) e utiliza
+exclusivamente bytecodes sem qualquer metadado de nome de função. O modelo conjunto
+exige apenas um conjunto de pesos para operar corretamente nos dois principais
+navegadores de desktop.
+
+\section{Perguntas de pesquisa}
+\label{sec:perguntas}
+
+Este trabalho é orientado pelas seguintes perguntas de pesquisa:
+
+\textbf{PQ1.} É possível projetar uma representação intermediária cross-engine
+que mapeie opcodes do V8 e do SpiderMonkey para um vocabulário comum com cobertura
+superior a 99\% dos tokens observados em um corpus de escala real?
+
+\textbf{PQ2.} Um único classificador treinado sobre essa RI consegue detectar
+funções de fingerprinting em ambos os motores com F1 comparável ao estado
+da arte, sem retreinamento por motor?
+
+\textbf{PQ3.} A RI é suficiente para viabilizar transferência zero-shot entre
+motores, ou o treinamento conjunto também é necessário?
+
+\textbf{PQ4.} Qual é o teto de informação da detecção baseada exclusivamente em
+bytecodes cross-engine, isto é, qual o F1 máximo alcançável antes que a
+expansão do espaço de features deixe de produzir ganhos mensuráveis?
+
+%, , , , , , , , , , , , , , , , , , , --
+\section{Contribuições}
+\label{sec:contribuicoes}
+
+As contribuições deste trabalho são:
+
+\begin{enumerate}
+
+\item \textbf{Instrumentação do SpiderMonkey com rastreamento de funções
+anônimas.} Modificação do código-fonte do Firefox/SpiderMonkey para emitir, a
+cada função compilada, o URL do script, o índice interno, o nome da função e a
+sequência de bytecodes. Para funções anônimas, um identificador único
+(\texttt{anon\_injected\_ID}) é injetado como \texttt{displayName} da função,
+propagando-se para o \texttt{Error.stack} da chamada e possibilitando o
+join com as chamadas de API sem perda de dados.
+
+\item \textbf{Pipeline de coleta cross-engine.} Crawlers
+Selenium/Firefox e Playwright/Chromium que visitam os 10.000 sites mais
+populares da lista Tranco com os dois navegadores instrumentados, emitindo logs no
+mesmo formato JSONL unificado. Uma extensão de navegador compartilhada (Manifest
+V3) intercepta 32 APIs de fingerprinting em ambos os motores e normaliza
+propriedades Firefox-exclusivas, de modo que as bibliotecas de
+fingerprinting tomem o mesmo caminho de código nos dois navegadores.
+
+\item \textbf{Dataset cross-engine de escala real.} 68.008.403 funções
+JavaScript rotuladas provenientes de ambos os motores, com 37.644 funções de
+fingerprinting (0,055\%), cobrindo sete categorias: Canvas, Áudio, WebRTC,
+Fonte, WebGL, Tela e Navigator.
+
+\item \textbf{Representação intermediária cross-engine (contribuição principal).}
+Metodologia baseada em 27 micro-scripts cobrindo construções JavaScript relevantes
+para fingerprinting, com execução pareada em ambos os motores e alinhamento
+manual e empírico das sequências de bytecodes. O dicionário resultante contém 198
+mapeamentos V8 e 236 mapeamentos SpiderMonkey para 145 tokens de RI, com cobertura
+de 99,82\% no corpus real.
+
+\item \textbf{Avaliação comparativa de classificadores.} Treinamento e avaliação
+de Random Forest, LightGBM, SVM, BiLSTM e Transformer para detecção binária (is\_fp)
+e multilabel (7 categorias) sobre as sequências de RI. Experimentos de
+generalização cross-engine: transferência zero-shot (F1 $\approx 0{,}15$) e modelo
+conjunto com contexto iterativo (F1~=~0,903 no Chromium, F1~=~0,904 no Firefox).
+Análise do teto de informação via comparação
+unigrams $\to$ bigrams $\to$ trigrams. Benchmark de inferência: 44~µs/função em
+CPU a lote de 1.000.
+
+\end{enumerate}
+
+%, , , , , , , , , , , , , , , , , , , --
+\section{Estrutura do documento}
+\label{sec:estrutura}
+
+O restante deste documento está organizado da seguinte forma.
+
+O \textbf{Capítulo~\ref{cap:fundamentacao}} apresenta a fundamentação teórica e
+os trabalhos relacionados: os mecanismos de browser fingerprinting, a
+arquitetura dos motores V8 e SpiderMonkey, o trabalho ByteDefender e as técnicas
+de representação de código por NLP (TF-IDF, word embeddings) utilizadas
+neste trabalho.
+
+O \textbf{Capítulo~\ref{cap:arquitetura}} descreve a arquitetura do sistema: a
+instrumentação do V8 e do SpiderMonkey, a extensão de navegador compartilhada, os
+crawlers, a normalização de propriedades Firefox e a estratégia de
+join entre bytecodes e chamadas de API.
+
+O \textbf{Capítulo~\ref{cap:dataset}} caracteriza o dataset: configuração do
+crawl, estatísticas do corpus, heurísticas de rotulagem, limpeza de ruído e
+estratégia de amostragem para treinamento.
+
+O \textbf{Capítulo~\ref{cap:ir}} detalha a representação intermediária
+cross-engine: motivação, metodologia dos micro-scripts, o dicionário de
+equivalência e o pipeline de tradução do dataset. Descreve também o treinamento
+dos embeddings FastText sobre o corpus traduzido.
+
+O \textbf{Capítulo~\ref{cap:experimentos}} apresenta os experimentos e
+resultados: configuração experimental, resultados dos classificadores binário e
+multilabel, generalização cross-engine (zero-shot e modelo conjunto) e benchmark
+de inferência.
+
+O \textbf{Capítulo~\ref{cap:discussao}} discute os resultados: o teto de
+informação da RI, a necessidade do treinamento conjunto, os limites do multilabel
+para rótulos raros, o custo da independência de motor em comparação com o
+ByteDefender e a implantabilidade prática.
+
+O \textbf{Capítulo~\ref{cap:conclusao}} conclui o trabalho com uma síntese das
+contribuições, as limitações identificadas e as direções para trabalhos futuros.
+
+O \textbf{Apêndice~\ref{ap:ir-dict}} apresenta o dicionário de equivalência
+completo da RI cross-engine (145 tokens, 198 mapeamentos V8, 236 mapeamentos
+SpiderMonkey). O \textbf{Apêndice~\ref{ap:instrumentacao}} contém os detalhes
+técnicos da instrumentação do V8 e do SpiderMonkey. O
+\textbf{Apêndice~\ref{ap:crawler-ext}} reúne os detalhes de implementação dos
+crawlers e da extensão de navegador compartilhada.

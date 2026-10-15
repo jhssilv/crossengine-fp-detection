@@ -1,0 +1,38 @@
+{
+  "script": "14_conditional",
+  "v8": [
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_6211134554334037388",
+      "script_url": "",
+      "start_pos": 0,
+      "end_pos": 0,
+      "bytecodes": "LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_13457241354736038441",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/14_conditional/page.html",
+      "start_pos": 0,
+      "end_pos": 180,
+      "bytecodes": "LdaConstant,Star1,Mov,CallRuntime,LdaGlobal,Star1,LdaSmi,Star2,LdaSmi,Star3,CallUndefinedReceiver2,Star0,Return"
+    },
+    {
+      "function_name": "conditional",
+      "injected_id": "fn_2698161414530683848",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/14_conditional/page.html",
+      "start_pos": 21,
+      "end_pos": 159,
+      "bytecodes": "Ldar,TestGreaterThan,JumpIfFalse,Mov,Ldar,Jump,Mov,Ldar,LdaZero,TestGreaterThanOrEqual,JumpIfFalse,Ldar,Jump,Ldar,Negate,Star1,Ldar,Add,Return"
+    }
+  ],
+  "sm": [
+    {
+      "function_name": "conditional",
+      "injected_id": "conditional",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/14_conditional/page.html",
+      "script_id": "1",
+      "bytecodes": "GetArg, GetArg, Gt, JumpIfFalse, JumpTarget, GetArg, SetLocal, Pop, Goto, JumpTarget, GetArg, SetLocal, Pop, JumpTarget, GetArg, Zero, Ge, JumpIfFalse, JumpTarget, GetArg, Goto, JumpTarget, GetArg, Neg, JumpTarget, SetLocal, Pop, GetLocal, GetLocal, Add, Return, RetRval,"
+    }
+  ]
+}

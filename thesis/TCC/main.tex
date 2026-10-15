@@ -1,0 +1,200 @@
+% ============================================================
+%  TCC — Detecção Cross-Engine de Browser Fingerprinting
+%  José Henrique S. Silva — UFRGS / Instituto de Informática
+%  Compilar: pdflatex → bibtex → pdflatex → pdflatex
+% ============================================================
+\documentclass[cic,tc]{iiufrgs}
+
+% -----------------------------------------------------------
+% Codificação e idioma
+% -----------------------------------------------------------
+\usepackage[utf8]{inputenc}
+
+% -----------------------------------------------------------
+% Fonte
+% -----------------------------------------------------------
+\usepackage{times}
+
+% -----------------------------------------------------------
+% Matemática
+% -----------------------------------------------------------
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{icomma}   % vírgula decimal sem espaço em modo matemático
+
+% -----------------------------------------------------------
+% Tabelas
+% -----------------------------------------------------------
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{tabularx}
+\usepackage{array}
+
+% -----------------------------------------------------------
+% Código-fonte e caminhos de arquivo
+% -----------------------------------------------------------
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{url}
+\urlstyle{tt}
+% iiufrgs redefines \path with angle-bracket delimiters; restore it to
+% the url-package version (typewriter font, line-breaking at / . _ - etc.)
+\DeclareUrlCommand\path{\urlstyle{tt}}
+
+\definecolor{codebg}{RGB}{248,248,248}
+\definecolor{codeframe}{RGB}{200,200,200}
+\definecolor{codecomment}{RGB}{100,100,100}
+\definecolor{codestring}{RGB}{0,128,0}
+\definecolor{codekeyword}{RGB}{0,0,180}
+
+\lstset{
+  backgroundcolor=\color{codebg},
+  basicstyle=\ttfamily\scriptsize,
+  breaklines=true,
+  breakatwhitespace=false,
+  postbreak=\mbox{\textcolor{gray}{$\hookrightarrow$}\space},
+  frame=single,
+  rulecolor=\color{codeframe},
+  numbers=none,
+  showstringspaces=false,
+  columns=flexible,
+  keepspaces=true,
+  commentstyle=\color{codecomment},
+  stringstyle=\color{codestring},
+  keywordstyle=\color{codekeyword},
+}
+
+% -----------------------------------------------------------
+% Gráficos
+% -----------------------------------------------------------
+\usepackage{graphicx}
+\usepackage{caption}
+
+% -----------------------------------------------------------
+% Citações ABNT (autor-data)
+% -----------------------------------------------------------
+\usepackage[alf,abnt-emphasize=bf]{abntex2cite}
+% hyperref already loaded by iiufrgs.cls with colorlinks=true and all colors=black
+
+% Allow extra inter-word stretch before declaring overfull hbox.
+% Prevents long \path identifiers from overflowing into the margin.
+\setlength{\emergencystretch}{3em}
+
+% -----------------------------------------------------------
+% Metadados do trabalho
+% -----------------------------------------------------------
+\title{DETECÇÃO CROSS-ENGINE DE BROWSER FINGERPRINTING POR REPRESENTAÇÃO INTERMEDIÁRIA DE BYTECODES JAVASCRIPT}
+
+\author{Silva}{José Henrique de Souza}
+
+\advisor[Prof.~Dr.]{Giovani Balreira}{Dennis}
+
+% -----------------------------------------------------------
+% Palavras-chave
+% -----------------------------------------------------------
+\keyword{Browser Fingerprinting}
+\keyword{Representação intermediária}
+\keyword{Bytecodes}
+\keyword{JavaScript}
+\keyword{Aprendizado de máquina}
+\keyword{V8}
+\keyword{SpiderMonkey}
+
+% -----------------------------------------------------------
+% Nominata
+% -----------------------------------------------------------
+\renewcommand{\nominataReit}{Prof\textsuperscript{a}.~Marcia Cristina Bernardes Barbosa}
+\renewcommand{\nominataReitname}{Reitora}
+\renewcommand{\nominataPRAPG}{Prof\textsuperscript{a}.~Claudia Wasserman}
+\renewcommand{\nominataPRAPGname}{Pr{\'o}-Reitora de P{\'o}s-Gradua{\c{c}}{\~a}o}
+\renewcommand{\nominataDir}{Prof.~Luciano Paschoal Gaspary}
+\renewcommand{\nominataDirname}{Diretor do Instituto de Inform{\'a}tica}
+\renewcommand{\nominataCoord}{Prof.~Gabriel Luca Nazar}
+\renewcommand{\nominataCoordname}{Coordenador do Curso de Ciência da Computação}
+\renewcommand{\nominataBibchefe}{Alexsander Borges Ribeiro}
+\renewcommand{\nominataBibchefename}{Bibliotec{\'a}rio-chefe do Instituto de Inform{\'a}tica}
+\renewcommand{\nominataChefeINA}{Prof.~Leandro Krug Wives}
+\renewcommand{\nominataChefeINAname}{Chefe do \deptINA}
+\renewcommand{\nominataChefeINT}{Prof\textsuperscript{a}.~Mariana Luderitz Kolberg Fernandes}
+\renewcommand{\nominataChefeINTname}{Chefe do \deptINT}
+
+% -----------------------------------------------------------
+% COMPILAÇÃO RÁPIDA: descomente a linha abaixo e coloque
+% apenas o capítulo que está editando (ex: cap6, cap7).
+% Referências cruzadas continuam funcionando.
+% Remova antes de compilar a versão final.
+% -----------------------------------------------------------
+%\includeonly{cap6}
+
+% ============================================================
+\begin{document}
+
+% -----------------------------------------------------------
+% Folha de rosto
+% -----------------------------------------------------------
+\maketitle
+
+% -----------------------------------------------------------
+% Dedicatória
+% -----------------------------------------------------------
+\clearpage
+\begin{flushright}
+    \mbox{}\vfill
+    {\sffamily\itshape
+      ``A tecnologia que usamos hoje foi projetada para nos trair de maneiras que a grande maioria de nós nem sequer compreende''\\}
+    --- \textsc{Edward Snowden}
+\end{flushright}
+
+% -----------------------------------------------------------
+% Agradecimentos
+% -----------------------------------------------------------
+\chapter*{Agradecimentos}
+Agradeço à minha família, especialmente à minha mãe, Jacqueline, por tornar minha carreira uma realidade. Ao meu orientador, Prof. Dr. Dennis, e ao meu colega Me. Rafa, por me guiarem no mundo da NLP, ouvirem minhas ideias e me direcionarem a essa área incrível. Ao Celo, Nathan, André, Gica, Isa, Mari, Gabriel, Grilli, Aline, Alice, Gremista, Alex, Henri, Douglas, Gus, Breno, Gean e Diego; a amizade de vocês tornou esse curso mais leve e divertido. E, finalmente, agradeço à minha companheira e melhor amiga, Giulia, por nunca medir esforços para me motivar.
+
+Alguns experimentos deste trabalho utilizaram os recursos da infraestrutura PCAD (\path{pcad.inf.ufrgs.br}), no INF/UFRGS. Em particular, foram utilizadas a máquina \textit{blaise} (financiada pelo convênio Petrobras TC 0050.0102253.16.9, coordenado pelo Prof. Philippe O. A. Navaux) e a partição compartilhada do cluster.
+
+% -----------------------------------------------------------
+% Resumo e Abstract
+% -----------------------------------------------------------
+\input{pretextual}
+
+% -----------------------------------------------------------
+% Listas
+% -----------------------------------------------------------
+\listoffigures
+\listoftables
+
+% -----------------------------------------------------------
+% Siglas
+% -----------------------------------------------------------
+\input{siglas}
+
+% -----------------------------------------------------------
+% Sumário
+% -----------------------------------------------------------
+\tableofcontents
+
+% -----------------------------------------------------------
+% Texto principal
+% -----------------------------------------------------------
+\include{cap1}
+\include{cap2}
+\include{cap3}
+\include{cap4}
+\include{cap5}
+\include{cap6}
+\include{cap7}
+\include{cap8}
+
+% -----------------------------------------------------------
+% Referências
+% -----------------------------------------------------------
+\bibliographystyle{abntex2-alf}
+\bibliography{referencias}
+
+% -----------------------------------------------------------
+% Apêndices
+% -----------------------------------------------------------
+\include{apendices}
+
+\end{document}

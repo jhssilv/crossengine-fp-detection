@@ -1,0 +1,38 @@
+{
+  "script": "27_string_concat",
+  "v8": [
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_6211134554334037388",
+      "script_url": "",
+      "start_pos": 0,
+      "end_pos": 0,
+      "bytecodes": "LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_15779117327637871238",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/27_string_concat/page.html",
+      "start_pos": 0,
+      "end_pos": 170,
+      "bytecodes": "LdaConstant,Star1,Mov,CallRuntime,LdaGlobal,Star1,LdaConstant,Star2,LdaConstant,Star3,CallUndefinedReceiver2,Star0,Return"
+    },
+    {
+      "function_name": "stringConcat",
+      "injected_id": "fn_347944696393118603",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/27_string_concat/page.html",
+      "start_pos": 22,
+      "end_pos": 140,
+      "bytecodes": "Ldar,Add,Star0,LdaConstant,Star4,Ldar,Add,Star1,LdaConstant,Add,Star2,Ldar,Add,Star4,Ldar,Add,Star3,Return"
+    }
+  ],
+  "sm": [
+    {
+      "function_name": "stringConcat",
+      "injected_id": "stringConcat",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/27_string_concat/page.html",
+      "script_id": "1",
+      "bytecodes": "GetArg, GetArg, Add, SetLocal, Pop, String, GetArg, Add, SetLocal, Pop, GetArg, String, Add, SetLocal, Pop, GetLocal, GetLocal, Add, GetLocal, Add, SetLocal, Pop, GetLocal, Return, RetRval,"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "script": "07_keyed_read",
+  "v8": [
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_6211134554334037388",
+      "script_url": "",
+      "start_pos": 0,
+      "end_pos": 0,
+      "bytecodes": "LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_17276900840540651700",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/07_keyed_read/page.html",
+      "start_pos": 0,
+      "end_pos": 113,
+      "bytecodes": "LdaConstant,Star1,Mov,CallRuntime,LdaGlobal,Star1,CreateArrayLiteral,Star2,LdaSmi,Star3,CallUndefinedReceiver2,Star0,Return"
+    },
+    {
+      "function_name": "keyedRead",
+      "injected_id": "fn_17711773407628275478",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/07_keyed_read/page.html",
+      "start_pos": 19,
+      "end_pos": 83,
+      "bytecodes": "Ldar,GetKeyedProperty,Star0,LdaZero,GetKeyedProperty,Star1,Ldar,Add,Return"
+    }
+  ],
+  "sm": [
+    {
+      "function_name": "keyedRead",
+      "injected_id": "keyedRead",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/07_keyed_read/page.html",
+      "script_id": "1",
+      "bytecodes": "GetArg, GetArg, GetElem, SetLocal, Pop, GetArg, Zero, GetElem, SetLocal, Pop, GetLocal, GetLocal, Add, Return, RetRval,"
+    }
+  ]
+}

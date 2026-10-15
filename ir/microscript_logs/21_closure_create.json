@@ -1,0 +1,53 @@
+{
+  "script": "21_closure_create",
+  "v8": [
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_6211134554334037388",
+      "script_url": "",
+      "start_pos": 0,
+      "end_pos": 0,
+      "bytecodes": "LdaUndefined,Return"
+    },
+    {
+      "function_name": "(anonymous)",
+      "injected_id": "fn_7940246691570835458",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/21_closure_create/page.html",
+      "start_pos": 0,
+      "end_pos": 141,
+      "bytecodes": "LdaConstant,Star1,Mov,CallRuntime,LdaGlobal,Star1,LdaSmi,Star2,CallUndefinedReceiver1,Star0,Return"
+    },
+    {
+      "function_name": "closureCreate",
+      "injected_id": "fn_4970923239116191222",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/21_closure_create/page.html",
+      "start_pos": 23,
+      "end_pos": 120,
+      "bytecodes": "CreateFunctionContextWithCells,PushContext,Ldar,StaCurrentContextSlotNoCell,CreateClosure,Star0,LdaSmi,Star3,CallUndefinedReceiver1,Return"
+    },
+    {
+      "function_name": "multiplier",
+      "injected_id": "fn_783248198768722835",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/21_closure_create/page.html",
+      "start_pos": 61,
+      "end_pos": 93,
+      "bytecodes": "LdaImmutableCurrentContextSlot,Mul,Return"
+    }
+  ],
+  "sm": [
+    {
+      "function_name": "multiplier",
+      "injected_id": "multiplier",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/21_closure_create/page.html",
+      "script_id": "2",
+      "bytecodes": "GetArg, GetAliasedVar, Mul, Return, RetRval,"
+    },
+    {
+      "function_name": "closureCreate",
+      "injected_id": "closureCreate",
+      "script_url": "file:///tmp/ir_microscripts__dx1ig4l/21_closure_create/page.html",
+      "script_id": "1",
+      "bytecodes": "GetFrameArg, SetAliasedVar, Pop, Lambda, SetLocal, Pop, GetLocal, Undefined, Int8, Call, Return, RetRval,"
+    }
+  ]
+}
