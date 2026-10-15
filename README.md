@@ -4,6 +4,8 @@ Undergraduate thesis (INF/UFRGS). The JavaScript engines V8 (Chromium) and Spide
 
 Thesis (in Portuguese, with English abstract): [LUME/UFRGS](https://lume.ufrgs.br/handle/10183/312164). LaTeX source in `thesis/TCC/` (`latexmk main.tex`).
 
+Dataset and trained models: [doi:10.5281/zenodo.23394257](https://doi.org/10.5281/zenodo.23394257).
+
 > **Em português.** Código do Trabalho de Conclusão de Curso *Detecção cross-engine de browser fingerprinting por representação intermediária de bytecodes JavaScript* (INF/UFRGS). Os motores V8 e SpiderMonkey foram instrumentados para registrar os bytecodes de cada função, e os opcodes dos dois motores são mapeados para uma representação intermediária comum de 145 tokens. Sobre ela, um LightGBM com inferência iterativa detecta funções de fingerprinting com F1 = 0,904, e um único modelo treinado nos dois motores atinge F1 = 0,903 no Chromium e 0,904 no Firefox. A monografia completa está no [LUME](https://lume.ufrgs.br/handle/10183/312164).
 
 ## Layout
@@ -32,6 +34,8 @@ playwright install
 ```
 
 The Firefox crawler and `ir/scripts/run_microscripts.py` also need [geckodriver](https://github.com/mozilla/geckodriver) (the micro-script runner expects it at `/usr/local/bin/geckodriver`).
+
+Steps 1 to 3 can be skipped by downloading the datasets from [Zenodo](https://doi.org/10.5281/zenodo.23394257) into `data/` (`labeled_dataset_clean.parquet`) and `ir/` (`translated_dataset.parquet`). Query strings in their `script_url` column are pseudonymized, which does not change any result.
 
 ### 1. Instrumented browsers
 
@@ -138,6 +142,14 @@ Full discussion in chapters 6 and 7 of the thesis.
   institution = {Universidade Federal do Rio Grande do Sul},
   year        = {2026},
   url         = {https://lume.ufrgs.br/handle/10183/312164}
+}
+
+@dataset{silva2026crossengine_data,
+  author    = {Silva, José Henrique de Souza},
+  title     = {Cross-engine JavaScript bytecode dataset for browser fingerprinting detection (V8 + SpiderMonkey)},
+  publisher = {Zenodo},
+  year      = {2026},
+  doi       = {10.5281/zenodo.23394257}
 }
 ```
 
