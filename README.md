@@ -4,6 +4,8 @@ Undergraduate thesis (INF/UFRGS). The JavaScript engines V8 (Chromium) and Spide
 
 Thesis (in Portuguese, with English abstract): [LUME/UFRGS](https://lume.ufrgs.br/handle/10183/312164). LaTeX source in `thesis/TCC/` (`latexmk main.tex`).
 
+> **Em português.** Código do Trabalho de Conclusão de Curso *Detecção cross-engine de browser fingerprinting por representação intermediária de bytecodes JavaScript* (INF/UFRGS). Os motores V8 e SpiderMonkey foram instrumentados para registrar os bytecodes de cada função, e os opcodes dos dois motores são mapeados para uma representação intermediária comum de 145 tokens. Sobre ela, um LightGBM com inferência iterativa detecta funções de fingerprinting com F1 = 0,904, e um único modelo treinado nos dois motores atinge F1 = 0,903 no Chromium e 0,904 no Firefox. A monografia completa está no [LUME](https://lume.ufrgs.br/handle/10183/312164).
+
 ## Layout
 
 | Path | Contents |
