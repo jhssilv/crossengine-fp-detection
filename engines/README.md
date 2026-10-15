@@ -18,6 +18,8 @@ The instrumentation captures, at compile time, the bytecode sequence of each Jav
 | `v8-interpreter.patch` | `v8/src/interpreter/interpreter.cc` | V8 `15ab4d3626ed3b62c096f90073cf3d8a6e3c300a` |
 | `spidermonkey-bytecode-emitter.patch` | `js/src/frontend/BytecodeEmitter.cpp` | gecko-dev `5836a062726f715fda621338a17b51aff30d0a8c` |
 
+Resulting builds: Chromium 149.0.7812.0 and Firefox 142.0a1.
+
 The crawlers expect the source trees under `navegadores/` (gitignored):
 
 ```bash
