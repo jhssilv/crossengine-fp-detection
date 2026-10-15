@@ -4,10 +4,6 @@ title: "crossengine-fp-detection"
 authors:
   - family-names: "Silva"
     given-names: "José Henrique de Souza"
-identifiers:
-  - type: doi
-    value: "10.5281/zenodo.23394257"
-    description: "Dataset and trained models"
 repository-code: "https://github.com/jhssilv/crossengine-fp-detection"
 license: MIT
 preferred-citation:
