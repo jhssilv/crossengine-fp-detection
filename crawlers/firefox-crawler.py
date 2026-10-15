@@ -72,11 +72,11 @@ def _make_watchdog_ff(timeout: float, driver: webdriver.Firefox):
 
     def _kill():
         fired.set()
-        print(f"\n  [WATCHDOG] Firefox travado >{timeout:.0f}s — matando geckodriver")
+        print(f"\n  [WATCHDOG] Firefox stuck >{timeout:.0f}s, killing geckodriver")
         try:
             driver.service.process.kill()
         except Exception as e:
-            print(f"  [WATCHDOG] kill falhou: {e}")
+            print(f"  [WATCHDOG] kill failed: {e}")
         print("  [WATCHDOG] geckodriver killed. Nuclear timer in 15s in case Python hangs.")
 
         def _self_kill():
@@ -264,7 +264,7 @@ def crawl_site(driver: webdriver.Firefox, url: str) -> tuple[list[dict], bool]:
     try:
         driver.get(url)
     except Exception as e:
-        print(f"  [WARN] get() falhou ({_ts()}): {e}")
+        print(f"  [WARN] get() failed ({_ts()}): {e}")
         return [], False
 
     print(f"  [{_ts()}] page loaded")
@@ -296,7 +296,7 @@ def crawl_site(driver: webdriver.Firefox, url: str) -> tuple[list[dict], bool]:
         try:
             driver.execute_script("window.scrollBy(0, 300);")
         except Exception as e:
-            print(f"  [{_ts()}] scrollBy falhou no passo {i+1}: {e}")
+            print(f"  [{_ts()}] scrollBy failed at step {i+1}: {e}")
             break
         try:
             x, y = _WAYPOINTS[i % len(_WAYPOINTS)]
@@ -318,7 +318,7 @@ def crawl_site(driver: webdriver.Firefox, url: str) -> tuple[list[dict], bool]:
         print(f"  [{_ts()}] {len(calls or [])} fp_calls coletados")
         return calls or [], typed
     except Exception as e:
-        print(f"  [WARN] fp_calls falhou ({_ts()}): {e}")
+        print(f"  [WARN] fp_calls failed ({_ts()}): {e}")
         return [], typed
 
 
@@ -380,7 +380,7 @@ def main():
                 try:
                     calls, typed = crawl_site(driver, url)
                 except Exception as e:
-                    print(f"  [ERRO] crawl_site: {e}")
+                    print(f"  [ERROR] crawl_site: {e}")
                 finally:
                     wd.cancel()
                     if wd_fired.is_set():
@@ -404,7 +404,7 @@ def main():
                 print(f"  {typed_tag} | {len(calls)} fp_calls")
 
         except Exception as e:
-            print(f"[ERRO] Batch interrompido: {e}")
+            print(f"[ERROR] Batch interrupted: {e}")
         finally:
             try:
                 driver.quit()

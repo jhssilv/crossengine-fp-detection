@@ -318,7 +318,7 @@ def crawl_site(page, url: str) -> tuple[list[dict], bool]:
     try:
         page.goto(url, wait_until="domcontentloaded", timeout=PAGE_TIMEOUT)
     except Exception as e:
-        print(f"  [{_ts()}] goto falhou: {e}")
+        print(f"  [{_ts()}] goto failed: {e}")
         return [], False
 
     print(f"  [{_ts()}] page loaded")
@@ -357,7 +357,7 @@ def crawl_site(page, url: str) -> tuple[list[dict], bool]:
         try:
             page.mouse.wheel(0, 300)
         except Exception as e:
-            print(f"  [{_ts()}] mouse.wheel falhou no scroll {i+1}: {e}")
+            print(f"  [{_ts()}] mouse.wheel failed on scroll {i+1}: {e}")
             break
         try:
             x, y = waypoints[i % len(waypoints)]
@@ -434,7 +434,7 @@ def main():
         browser = p.chromium.connect_over_cdp(f"http://localhost:{CDP_PORT}", timeout=15000)
         context = browser.contexts[0] if browser.contexts else browser.new_context()
         sites_since_restart = 0
-        print("[RESTART] Chromium reiniciado.")
+        print("[RESTART] Chromium restarted.")
 
     try:
         with sync_playwright() as p:
@@ -462,7 +462,7 @@ def main():
                 try:
                     calls, typed = crawl_site(page, url)
                 except Exception as e:
-                    print(f"  [ERRO] {e}")
+                    print(f"  [ERROR] {e}")
                 finally:
                     wd.cancel()
                     if wd_fired.is_set():

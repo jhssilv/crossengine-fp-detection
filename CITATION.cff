@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite the thesis below."
+title: "crossengine-fp-detection"
+authors:
+  - family-names: "Silva"
+    given-names: "José Henrique de Souza"
+repository-code: "https://github.com/jhssilv/crossengine-fp-detection"
+license: MIT
+preferred-citation:
+  type: thesis
+  title: "Detecção cross-engine de browser fingerprinting por representação intermediária de bytecodes JavaScript"
+  authors:
+    - family-names: "Silva"
+      given-names: "José Henrique de Souza"
+  thesis-type: "Bachelor's thesis"
+  institution:
+    name: "Universidade Federal do Rio Grande do Sul"
+  year: 2026
+  url: "https://lume.ufrgs.br/handle/10183/312164"

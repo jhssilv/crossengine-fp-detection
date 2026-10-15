@@ -2,7 +2,7 @@
 
 Undergraduate thesis (INF/UFRGS). The JavaScript engines V8 (Chromium) and SpiderMonkey (Firefox) are instrumented to capture the bytecodes of every function. Those functions are linked to fingerprinting API calls observed at runtime, and classifiers are trained on an intermediate representation (IR) shared by both engines. Extends ByteDefender (2025), which uses V8 only.
 
-The thesis (in Portuguese) is in `thesis/TCC/` (`latexmk main.tex`).
+Thesis (in Portuguese, with English abstract): [LUME/UFRGS](https://lume.ufrgs.br/handle/10183/312164). LaTeX source in `thesis/TCC/` (`latexmk main.tex`).
 
 ## Layout
 
@@ -28,6 +28,8 @@ python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 playwright install
 ```
+
+The Firefox crawler and `ir/scripts/run_microscripts.py` also need [geckodriver](https://github.com/mozilla/geckodriver) (the micro-script runner expects it at `/usr/local/bin/geckodriver`).
 
 ### 1. Instrumented browsers
 
@@ -123,6 +125,19 @@ python ir/scripts/train_lgbm_multilabel.py
 | Joint model with iterative context, Chromium / Firefox | 0.903 / 0.904 |
 
 Full discussion in chapters 6 and 7 of the thesis.
+
+## Citation
+
+```bibtex
+@thesis{silva2026crossengine,
+  author      = {Silva, José Henrique de Souza},
+  title       = {Detecção cross-engine de browser fingerprinting por representação intermediária de bytecodes JavaScript},
+  type        = {Bachelor's thesis},
+  institution = {Universidade Federal do Rio Grande do Sul},
+  year        = {2026},
+  url         = {https://lume.ufrgs.br/handle/10183/312164}
+}
+```
 
 ## License
 
