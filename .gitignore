@@ -1,28 +1,28 @@
-# Ambiente local
+# Local environment
 .venv/
 .claude/
 CLAUDE.md
 __pycache__/
 
-# Árvores de código e builds dos navegadores instrumentados (ver engines/)
+# Instrumented browser source trees and builds (see engines/)
 navegadores/
 /spidermonkey-tcc
 
-# Dados gerados (crawl, datasets, estatísticas por script)
+# Generated data (crawl, datasets, per-script statistics)
 data/
 ir/corpus.txt
 ir/*.parquet
 ir/script_*.json
 ir/microscript_logs/*.log
 
-# Modelos treinados (metrics.json e config.json continuam versionados)
+# Trained models (metrics.json and config.json stay versioned)
 *.pkl
 *.pt
 *.bin
 
 *.log
 
-# Build LaTeX
+# LaTeX build
 thesis/TCC/*.aux
 thesis/TCC/*.bbl
 thesis/TCC/*.blg

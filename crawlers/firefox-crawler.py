@@ -1,15 +1,15 @@
 """
-Firefox crawler com captura de bytecodes SpiderMonkey + fingerprinting APIs.
+Firefox crawler capturing SpiderMonkey bytecodes and fingerprinting API calls.
 
-Idempotente: registra URLs concluídas em DONE_FILE. Relançar o script
-retoma a partir da última URL pendente, sem reprocessar sites já visitados.
+Idempotent: finished URLs are recorded in DONE_FILE. Re-running the script
+resumes from the first pending URL without revisiting finished sites.
 
-Fluxo por batch de BATCH_SIZE sites:
-  1. Lança o Firefox customizado (geckodriver → geckodriver_raw.log)
-  2. Carrega a extensão compartilhada (content script MAIN world)
-  3. Crawla BATCH_SIZE sites; após cada site: appenda fp_calls + marca done
-  4. Encerra Firefox; parseia geckodriver log do batch → appenda bytecodes
-  5. Repete até não haver mais sites pendentes
+Flow per batch of BATCH_SIZE sites:
+  1. Launch the instrumented Firefox (geckodriver → geckodriver_raw.log)
+  2. Load the shared extension (MAIN world content script)
+  3. Crawl BATCH_SIZE sites; after each site: append fp_calls + mark done
+  4. Close Firefox; parse the batch geckodriver log → append bytecodes
+  5. Repeat until no sites are pending
 """
 import argparse
 import gzip
@@ -42,12 +42,12 @@ FP_CALLS_FILE   = LOGS_DIR / "firefox_fp_calls.jsonl"
 DONE_FILE       = LOGS_DIR / "firefox_done.txt"
 
 # ── Config ────────────────────────────────────────────────────────────────────
-CRAWL_LIMIT   = 10_000  # quantos sites do Tranco crawlar no total
-BATCH_SIZE    = 30      # reinicia Firefox a cada N sites (controla tamanho do geckodriver log)
-DWELL_SECONDS = 4       # segundos de scroll por página
-FP_WAIT_EXTRA = 2       # espera extra para fingerprinting lazy
-PAGE_TIMEOUT    = 15    # timeout de carregamento por página (segundos)
-SITE_TIMEOUT_FF = 60    # watchdog: mata Firefox se um site travar (segundos)
+CRAWL_LIMIT   = 10_000  # number of Tranco sites to crawl
+BATCH_SIZE    = 30      # restart Firefox every N sites (bounds geckodriver log size)
+DWELL_SECONDS = 4       # seconds of scrolling per page
+FP_WAIT_EXTRA = 2       # extra wait for lazy fingerprinting
+PAGE_TIMEOUT    = 15    # page load timeout (seconds)
+SITE_TIMEOUT_FF = 60    # watchdog: kill Firefox if a site hangs (seconds)
 
 CHROME_UA = (
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
@@ -77,10 +77,10 @@ def _make_watchdog_ff(timeout: float, driver: webdriver.Firefox):
             driver.service.process.kill()
         except Exception as e:
             print(f"  [WATCHDOG] kill falhou: {e}")
-        print("  [WATCHDOG] geckodriver killed. Nuclear timer em 15s caso Python trave.")
+        print("  [WATCHDOG] geckodriver killed. Nuclear timer in 15s in case Python hangs.")
 
         def _self_kill():
-            print("  [WATCHDOG NUCLEAR] Python travado após kill — reiniciando processo")
+            print("  [WATCHDOG NUCLEAR] Python stuck after kill, restarting process")
             os.kill(os.getpid(), 9)
 
         nuke = threading.Timer(15, _self_kill)
@@ -133,10 +133,10 @@ def _sm_key(url: str, name: str) -> int:
 
 
 def parse_spidermonkey_batch(seen: set[int]) -> int:
-    """Parseia o geckodriver log do batch atual e appenda novos bytecodes.
+    """Parse the current batch geckodriver log and append new bytecodes.
 
-    seen: conjunto de (script_url, func_name) já escritos em sessões anteriores.
-    Modificado in-place para deduplicar entre batches da mesma sessão.
+    seen: set of (script_url, func_name) already written in earlier sessions.
+    Updated in place to deduplicate across batches of the same session.
     """
     if not GECKODRIVER_LOG.exists():
         return 0
@@ -181,7 +181,7 @@ def parse_spidermonkey_batch(seen: set[int]) -> int:
                     f_out.write("\n")
                     count += 1
 
-    print(f"  SM: +{count} funções ({skipped} internas, {dupes} dupes filtrados)")
+    print(f"  SM: +{count} functions ({skipped} internal, {dupes} dupes filtered)")
     return count
 
 
@@ -204,7 +204,7 @@ def start_firefox() -> webdriver.Firefox:
     try:
         driver.install_addon(str(EXTENSION), temporary=True)
     except Exception as e:
-        print(f"  [WARN] Extensão não carregada: {e}")
+        print(f"  [WARN] Extension not loaded: {e}")
     return driver
 
 
@@ -267,7 +267,7 @@ def crawl_site(driver: webdriver.Firefox, url: str) -> tuple[list[dict], bool]:
         print(f"  [WARN] get() falhou ({_ts()}): {e}")
         return [], False
 
-    print(f"  [{_ts()}] página carregada")
+    print(f"  [{_ts()}] page loaded")
 
     try:
         driver.execute_script(
@@ -330,7 +330,7 @@ def main():
     args = parser.parse_args()
 
     if not FIREFOX_BIN.exists():
-        raise FileNotFoundError(f"Firefox não encontrado: {FIREFOX_BIN}")
+        raise FileNotFoundError(f"Firefox not found: {FIREFOX_BIN}")
     LOGS_DIR.mkdir(parents=True, exist_ok=True)
 
     if args.url:
@@ -341,17 +341,17 @@ def main():
         completed = load_completed()
     pending   = [s for s in all_sites if s not in completed]
 
-    print(f"Tranco top-{CRAWL_LIMIT}: {len(all_sites)} sites carregados")
-    print(f"Concluídos: {len(completed)} | Pendentes: {len(pending)}")
+    print(f"Tranco top-{CRAWL_LIMIT}: {len(all_sites)} sites loaded")
+    print(f"Done: {len(completed)} | Pending: {len(pending)}")
 
     if not pending:
-        print("Nada a fazer.")
+        print("Nothing to do.")
         return
 
-    # Preload desabilitado — economiza ~4 GB de RAM; dupes entre sessões são
-    # deduplicados pelo post_processor.py durante o join.
+    # Preload disabled (saves ~4 GB of RAM); cross-session duplicates are
+    # removed by post_processor.py during the join.
     seen_sm: set[int] = set()
-    print("Bytecodes já no log: (preload desabilitado)")
+    print("Bytecodes already in log: (preload disabled)")
 
     total_fp = 0
     batch_num = 0
@@ -362,7 +362,7 @@ def main():
         batch_num += 1
 
         print(f"\n{'='*60}")
-        print(f"Batch {batch_num} | {len(batch)} sites | {len(pending)} restantes")
+        print(f"Batch {batch_num} | {len(batch)} sites | {len(pending)} remaining")
 
         GECKODRIVER_LOG.write_bytes(b"")  # truncate before each batch
         driver = start_firefox()
@@ -371,7 +371,7 @@ def main():
         try:
             for url in batch:
                 print(f"\n→ {url}")
-                mark_completed(url)  # antes do crawl: sobrevive SIGKILL, sem retry em sites travados
+                mark_completed(url)  # before crawling: survives SIGKILL, no retry on hanging sites
 
                 wd, wd_fired, cancel_nuke = _make_watchdog_ff(SITE_TIMEOUT_FF, driver)
                 wd.start()
@@ -385,10 +385,10 @@ def main():
                     wd.cancel()
                     if wd_fired.is_set():
                         cancel_nuke()
-                        print("  [WATCHDOG] crawl_site retornou — nuke cancelado")
+                        print("  [WATCHDOG] crawl_site returned, nuke cancelled")
 
                 if wd_fired.is_set():
-                    print("  Firefox morreu neste site — encerrando batch antecipado")
+                    print("  Firefox died on this site, ending batch early")
                     break
 
                 for c in calls:
@@ -411,13 +411,13 @@ def main():
             except Exception:
                 pass
 
-        # Parseia log do batch (Firefox encerrado → log estável)
+        # Parse the batch log (Firefox closed → log is stable)
         new_bc = parse_spidermonkey_batch(seen_sm)
         total_fp += batch_fp
-        print(f"Batch {batch_num} concluído: {batch_fp} fp_calls, {new_bc} novos bytecodes")
+        print(f"Batch {batch_num} done: {batch_fp} fp_calls, {new_bc} new bytecodes")
 
-    print(f"\nCrawl concluído. FP calls totais: {total_fp}")
-    print("Próximo passo: python pipeline/post_processor.py")
+    print(f"\nCrawl finished. Total FP calls: {total_fp}")
+    print("Next step: python pipeline/post_processor.py")
 
 
 if __name__ == "__main__":

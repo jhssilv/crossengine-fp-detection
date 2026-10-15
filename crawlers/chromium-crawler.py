@@ -1,16 +1,16 @@
 """
-Chromium crawler com captura de traces V8 + fingerprinting APIs.
+Chromium crawler capturing V8 bytecodes and fingerprinting API calls.
 
-Idempotente: registra URLs concluídas em DONE_FILE. Relançar o script
-retoma a partir da última URL pendente, sem reprocessar sites já visitados.
+Idempotent: finished URLs are recorded in DONE_FILE. Re-running the script
+resumes from the first pending URL without revisiting finished sites.
 
-Fluxo por site:
-  1. Lança o Chromium customizado (subprocess captura stderr → v8_lines)
-  2. Conecta via Playwright over CDP (sem gerenciar o processo)
-  3. Para cada URL: navega, simula interação, coleta window.__fpCalls
-     → appenda fp_calls imediatamente
-     → drena novas linhas v8_lines → appenda bytecodes ao disco
-     → marca site como concluído em DONE_FILE
+Per-site flow:
+  1. Launch the instrumented Chromium (subprocess captures stderr → v8_lines)
+  2. Connect with Playwright over CDP (without managing the process)
+  3. For each URL: navigate, simulate interaction, collect window.__fpCalls
+     → append fp_calls immediately
+     → drain new v8_lines → append bytecodes to disk
+     → mark the site as done in DONE_FILE
   4. O post_processor.py faz o join offline
 """
 import argparse
@@ -90,13 +90,13 @@ def _make_watchdog(timeout: float, proc_ref: list, pgid_ref: list):
 
     def _kill():
         fired.set()
-        print(f"\n  [WATCHDOG] >{timeout:.0f}s — matando Chrome para desbloquear")
+        print(f"\n  [WATCHDOG] >{timeout:.0f}s, killing Chrome to unblock")
         _killpg(pgid_ref[0], proc_ref[0])
-        print("  [WATCHDOG] Chrome killed. Nuclear timer em 15s caso crawl_site não retorne.")
+        print("  [WATCHDOG] Chrome killed. Nuclear timer in 15s in case crawl_site does not return.")
 
         def _self_kill():
             import sys as _sys
-            print("  [WATCHDOG NUCLEAR] crawl_site não retornou após kill — reiniciando Python",
+            print("  [WATCHDOG NUCLEAR] crawl_site did not return after kill, restarting Python",
                   flush=True)
             _sys.stderr.flush()
             os.kill(os.getpid(), 9)
@@ -199,7 +199,7 @@ def _make_stderr_writer(proc: subprocess.Popen, seen_ids: set[int]
     return bc_counter, t
 
 
-# ── Lançamento do Chromium ────────────────────────────────────────────────────
+# ── Chromium launch ──────────────────────────────────────────────────────────
 
 def wait_for_cdp(port: int, timeout: int = 30) -> bool:
     deadline = time.time() + timeout
@@ -238,7 +238,7 @@ def launch_chromium(seen_ids: set[int]) -> tuple[subprocess.Popen, list[int], Pa
         "--disable-default-apps",
         "--disk-cache-size=0",
         "--media-cache-size=0",
-        # UA idêntico ao do Firefox crawler para que ambos recebam o mesmo bundle JS
+        # Same UA as the Firefox crawler so both receive the same JS bundle
         "--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
         "(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
         "about:blank",
@@ -249,12 +249,12 @@ def launch_chromium(seen_ids: set[int]) -> tuple[subprocess.Popen, list[int], Pa
     pgid = os.getpgid(proc.pid)
     bc_counter, _ = _make_stderr_writer(proc, seen_ids)
 
-    print(f"Chrome PID {proc.pid} PGID {pgid} — aguardando CDP na porta {CDP_PORT}...")
+    print(f"Chrome PID {proc.pid} PGID {pgid} waiting for CDP on port {CDP_PORT}...")
     if not wait_for_cdp(CDP_PORT):
         _killpg(pgid, proc)
         shutil.rmtree(user_data, ignore_errors=True)
-        raise RuntimeError("Chromium não abriu porta CDP a tempo — verifique o binário")
-    print("CDP disponível.")
+        raise RuntimeError("Chromium did not open the CDP port in time; check the binary")
+    print("CDP available.")
 
     return proc, bc_counter, user_data, pgid
 
@@ -321,7 +321,7 @@ def crawl_site(page, url: str) -> tuple[list[dict], bool]:
         print(f"  [{_ts()}] goto falhou: {e}")
         return [], False
 
-    print(f"  [{_ts()}] página carregada")
+    print(f"  [{_ts()}] page loaded")
     vw = (page.viewport_size or {}).get("width", 1280)
     vh = (page.viewport_size or {}).get("height", 720)
 
@@ -381,8 +381,8 @@ def main():
     args = parser.parse_args()
 
     if not CHROMIUM_BIN.exists():
-        sys.exit(f"[ERRO] Binário não encontrado: {CHROMIUM_BIN}\n"
-                 "Execute o build no PCAD primeiro.")
+        sys.exit(f"[ERROR] Binary not found: {CHROMIUM_BIN}\n"
+                 "Build it first (see engines/README.md).")
     LOGS_DIR.mkdir(parents=True, exist_ok=True)
 
     if args.url:
@@ -393,17 +393,17 @@ def main():
         completed = load_completed()
     pending   = [s for s in all_sites if s not in completed]
 
-    print(f"Tranco top-{CRAWL_LIMIT}: {len(all_sites)} sites carregados")
-    print(f"Concluídos: {len(completed)} | Pendentes: {len(pending)}")
+    print(f"Tranco top-{CRAWL_LIMIT}: {len(all_sites)} sites loaded")
+    print(f"Done: {len(completed)} | Pending: {len(pending)}")
 
     if not pending:
-        print("Nada a fazer.")
+        print("Nothing to do.")
         return
 
-    # Preload desabilitado — economiza ~700 MB de RAM; dupes entre sessões são
-    # deduplicados pelo post_processor.py durante o join.
+    # Preload disabled (saves ~700 MB of RAM); cross-session duplicates are
+    # removed by post_processor.py during the join.
     seen_ids: set[int] = set()
-    print("Bytecodes já no log: (preload desabilitado)")
+    print("Bytecodes already in log: (preload disabled)")
 
     # Kill orphaned Chrome processes and clean up temp dirs from previous crashes
     subprocess.run(["pkill", "-9", "-f", str(CHROMIUM_BIN)], capture_output=True)
@@ -444,12 +444,12 @@ def main():
             for url in pending:
                 # Recovery: watchdog killed Chrome on the previous site
                 if proc.poll() is not None:
-                    _do_restart("Chrome morreu (watchdog/crash) — recuperando",
+                    _do_restart("Chrome died (watchdog/crash), recovering",
                                 chrome_dead=True)
 
                 # Periodic restart to cap process memory growth
                 elif sites_since_restart > 0 and sites_since_restart % CHROME_RESTART_EVERY == 0:
-                    _do_restart(f"Reiniciando Chromium após {sites_since_restart} sites...")
+                    _do_restart(f"Restarting Chromium after {sites_since_restart} sites...")
 
                 print(f"\n→ {url}")
                 mark_completed(url)  # before crawl: survives SIGKILL, no retry on stuck sites
@@ -467,9 +467,9 @@ def main():
                     wd.cancel()
                     if wd_fired.is_set():
                         cancel_nuke()
-                        print("  [WATCHDOG] crawl_site retornou após kill — nuke cancelado")
+                        print("  [WATCHDOG] crawl_site returned after kill, nuke cancelled")
                     elif proc.poll() is not None:
-                        print("  [WARN] Chrome morreu (OOM/crash) antes do watchdog — pulando page.close()")
+                        print("  [WARN] Chrome died (OOM/crash) before the watchdog, skipping page.close()")
                     else:
                         # Skip page.close() — it hangs on service workers / CDP
                         # timeouts for heavy sites and Playwright's sync API can't
@@ -504,13 +504,13 @@ def main():
                 pass
 
     except Exception as e:
-        print(f"[ERRO] Sessão interrompida: {e}")
+        print(f"[ERROR] Session interrupted: {e}")
     finally:
         _killpg(pgid, proc)
         shutil.rmtree(user_data, ignore_errors=True)
 
-    print(f"\nCrawl concluído. FP calls totais: {total_fp} | Bytecodes totais: {bc_counter[0]}")
-    print("Próximo passo: python pipeline/post_processor.py")
+    print(f"\nCrawl finished. Total FP calls: {total_fp} | Total bytecodes: {bc_counter[0]}")
+    print("Next step: python pipeline/post_processor.py")
 
 
 if __name__ == "__main__":

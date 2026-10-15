@@ -4,8 +4,8 @@
     window.__fpCalls = [];
     const _FP_CALLS_CAP = 5000;
 
-    // Normaliza propriedades do browser para que ambos os engines recebam o mesmo
-    // bundle JS e executem o mesmo código-fonte (necessário para alinhar a IR).
+    // Normalize browser properties so both engines receive the same JS bundle
+    // and run the same source code (required to align the IR).
     if (typeof window.chrome === 'undefined') {
         Object.defineProperty(window, 'chrome', {
             value: { runtime: {} },
@@ -17,9 +17,9 @@
             Object.defineProperty(navigator, 'vendor', { get: () => 'Google Inc.' });
         } catch (_) {}
     }
-    // Remove APIs exclusivas do Firefox que bibliotecas FP usam para detectar o
-    // engine e selecionar code paths diferentes (ex: fingerprintjs pula o canvas
-    // fingerprint se detectar Firefox via buildID, MozAppearance, etc.).
+    // Remove Firefox-only APIs that FP libraries use to detect the engine and pick
+    // different code paths (e.g. fingerprintjs skips the canvas fingerprint when
+    // it detects Firefox via buildID, MozAppearance, etc.).
     const _firefoxNavProps = ['buildID', 'globalPrivacyControl', 'oscpu'];
     for (const prop of _firefoxNavProps) {
         if (prop in navigator) {
@@ -39,10 +39,10 @@
     } catch (_) {}
 
     function parseFrame(frame) {
-        // V8/Chrome: "    at funcName (url:line:col)"  ou  "    at url:line:col"
+        // V8/Chrome: "    at funcName (url:line:col)"  or  "    at url:line:col"
         const v8Named = frame.match(/at ([^(@]+)\s+\((.+):(\d+):(\d+)\)/);
         const v8Anon  = frame.match(/^\s+at (https?:\/\/.+):(\d+):(\d+)\)?$/);
-        // Gecko/Firefox: "funcName@url:line:col"  ou  "@url:line:col"
+        // Gecko/Firefox: "funcName@url:line:col"  or  "@url:line:col"
         const geckoNamed = frame.match(/^([^@\s]+)@(https?:\/\/.+):(\d+):(\d+)$/);
         const geckoAnon  = frame.match(/^@(https?:\/\/.+):(\d+):(\d+)$/);
 
@@ -53,8 +53,8 @@
         return null;
     }
 
-    // Captura o stack trace ignorando qualquer Error.prepareStackTrace customizado
-    // que bibliotecas de fingerprinting (ex: creepjs) possam ter instalado.
+    // Capture the stack trace ignoring any custom Error.prepareStackTrace that
+    // fingerprinting libraries (e.g. creepjs) may have installed.
     function getRawStack() {
         const saved = Error.prepareStackTrace;
         Error.prepareStackTrace = undefined;
@@ -63,11 +63,11 @@
         return err.stack || '';
     }
 
-    // Emite uma entrada em __fpCalls para CADA frame HTTP único no call stack.
-    // Isso atribui a chamada a todas as funções presentes na cadeia de execução,
-    // não apenas ao caller imediato — necessário para que heurísticas multi-critério
-    // (ex: audio FP = createOscillator + startRendering + getChannelData na mesma
-    // função) funcionem mesmo quando os sub-calls vêm de funções internas.
+    // Emit one __fpCalls entry for EACH unique HTTP frame in the call stack.
+    // This attributes the call to every function in the execution chain, not only
+    // the immediate caller, so multi-criteria heuristics (e.g. audio FP =
+    // createOscillator + startRendering + getChannelData in the same function)
+    // still work when the sub-calls come from inner functions.
     function capture(api, arg) {
         if (window.__fpCalls.length >= _FP_CALLS_CAP) return;
         const stack = getRawStack();
@@ -101,15 +101,15 @@
         return _getImageData.apply(this, arguments);
     };
 
-    // fillText: arg = texto renderizado (comprimento ≥ 10 é critério de canvas FP)
+    // fillText: arg = rendered text (length >= 10 is a canvas FP criterion)
     const _fillText = CanvasRenderingContext2D.prototype.fillText;
     CanvasRenderingContext2D.prototype.fillText = function (text) {
         capture('canvas.fillText', text);
         return _fillText.apply(this, arguments);
     };
 
-    // Critérios negativos: presença de save/restore/addEventListener indica uso
-    // geral de canvas (não fingerprinting específico).
+    // Negative criteria: save/restore/addEventListener indicate general canvas
+    // use (not fingerprinting).
     const _save = CanvasRenderingContext2D.prototype.save;
     CanvasRenderingContext2D.prototype.save = function () {
         capture('canvas.save');
@@ -139,7 +139,7 @@
         return _measureText.apply(this, arguments);
     };
 
-    // font setter: arg = valor da fonte (heurística requer > 20 valores distintos)
+    // font setter: arg = font value (heuristic requires > 20 distinct values)
     try {
         const _fontDesc = Object.getOwnPropertyDescriptor(CanvasRenderingContext2D.prototype, 'font');
         if (_fontDesc && _fontDesc.set) {
@@ -154,7 +154,7 @@
         }
     } catch (_) {}
 
-    // ── OffscreenCanvas (mesmas heurísticas, API paralela) ────────────────────
+    // ── OffscreenCanvas (same heuristics, parallel API) ──────────────────────────
     try {
         if (window.OffscreenCanvasRenderingContext2D) {
             const _oFillText = OffscreenCanvasRenderingContext2D.prototype.fillText;

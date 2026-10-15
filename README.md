@@ -1,27 +1,27 @@
-# Detecção de browser fingerprinting por bytecodes cross-engine
+# Cross-engine browser fingerprinting detection from bytecodes
 
-Trabalho de Conclusão de Curso (INF/UFRGS). Instrumenta os motores JavaScript V8 (Chromium) e SpiderMonkey (Firefox) para capturar os bytecodes de cada função, liga essas funções a chamadas de APIs de fingerprinting observadas em tempo de execução e treina classificadores sobre uma representação intermediária (RI) comum aos dois motores. Estende o ByteDefender (2025), que usa só o V8.
+Undergraduate thesis (INF/UFRGS). The JavaScript engines V8 (Chromium) and SpiderMonkey (Firefox) are instrumented to capture the bytecodes of every function. Those functions are linked to fingerprinting API calls observed at runtime, and classifiers are trained on an intermediate representation (IR) shared by both engines. Extends ByteDefender (2025), which uses V8 only.
 
-A monografia está em `thesis/TCC/` (`latexmk main.tex`).
+The thesis (in Portuguese) is in `thesis/TCC/` (`latexmk main.tex`).
 
-## Estrutura
+## Layout
 
-| Caminho | Conteúdo |
+| Path | Contents |
 |---|---|
-| `engines/` | Patches do V8 e do SpiderMonkey, scripts de build do Chromium (SLURM) e documentação da instrumentação |
-| `extension/` | Extensão (Manifest V3) carregada nos dois navegadores; intercepta APIs de fingerprinting e registra a pilha de chamadas |
-| `crawlers/` | Crawlers Firefox (Selenium) e Chromium (Playwright) e a lista Tranco usada (10.000 sites) |
-| `pipeline/` | Junção bytecodes ↔ chamadas de API (`post_processor.py`) e limpeza do dataset (`clean_dataset.py`) |
-| `ir/` | Dicionário de equivalência da RI, micro-scripts de validação, tradução do dataset, embeddings e classificadores |
-| `ir/*_model*/`, `ir/lgbm_crossengine*/` | `metrics.json` de cada experimento citado na monografia |
-| `transformer/` | Classificador Transformer e scripts SLURM usados no cluster |
-| `thesis/TCC/` | Fonte LaTeX da monografia |
+| `engines/` | V8 and SpiderMonkey patches, Chromium build scripts (SLURM) and instrumentation docs |
+| `extension/` | Manifest V3 extension loaded in both browsers; hooks fingerprinting APIs and records the call stack |
+| `crawlers/` | Firefox (Selenium) and Chromium (Playwright) crawlers, plus the Tranco list used (10,000 sites) |
+| `pipeline/` | Bytecodes ↔ API calls join (`post_processor.py`) and dataset cleaning (`clean_dataset.py`) |
+| `ir/` | IR equivalence dictionary, validation micro-scripts, dataset translation, embeddings and classifiers |
+| `ir/*_model*/`, `ir/lgbm_crossengine*/` | `metrics.json` of each experiment reported in the thesis |
+| `transformer/` | Transformer classifier and the SLURM scripts used on the cluster |
+| `thesis/TCC/` | LaTeX source of the thesis |
 
-Não versionados (gerados localmente): `navegadores/` (árvores de código e builds dos navegadores), `data/` (crawl e datasets rotulados), `ir/*.parquet`, `ir/corpus.txt`, `ir/script_*.json` e os binários dos modelos (`*.pkl`, `*.pt`, `*.bin`).
+Not versioned (generated locally): `navegadores/` (browser source trees and builds), `data/` (crawl output and labeled datasets), `ir/*.parquet`, `ir/corpus.txt`, `ir/script_*.json` and model binaries (`*.pkl`, `*.pt`, `*.bin`).
 
-## Reprodução
+## Reproducing
 
-Testado com Python 3.14. O crawl e os datasets intermediários ocupam cerca de 150 GB.
+Tested with Python 3.14. The crawl and intermediate datasets take about 150 GB.
 
 ```bash
 python -m venv .venv && source .venv/bin/activate
@@ -29,9 +29,9 @@ pip install -r requirements.txt
 playwright install
 ```
 
-### 1. Navegadores instrumentados
+### 1. Instrumented browsers
 
-Ver `engines/README.md`. Os crawlers esperam:
+See `engines/README.md`. The crawlers expect:
 
 - `navegadores/v8-tcc/out/Release/chrome`
 - `navegadores/spidermonkey-tcc/gecko-dev/obj-x86_64-pc-linux-gnu/dist/bin/firefox`
@@ -43,26 +43,26 @@ python crawlers/firefox-crawler.py
 python crawlers/chromium-crawler.py
 ```
 
-Saída em `data/`: `*_bytecodes.jsonl.gz` e `*_fp_calls.jsonl`. Os crawlers retomam de onde pararam (`data/*_done.txt`).
+Output goes to `data/`: `*_bytecodes.jsonl.gz` and `*_fp_calls.jsonl`. The crawlers resume where they stopped (`data/*_done.txt`).
 
-### 3. Dataset rotulado
+### 3. Labeled dataset
 
 ```bash
 python pipeline/post_processor.py      # → data/labeled_dataset.parquet
 python pipeline/clean_dataset.py       # → data/labeled_dataset_clean.parquet
 ```
 
-### 4. Representação intermediária
+### 4. Intermediate representation
 
 ```bash
-python ir/scripts/run_microscripts.py          # valida o mapeamento com 27 micro-scripts
+python ir/scripts/run_microscripts.py          # validates the mapping with 27 micro-scripts
 python ir/scripts/build_equivalence_dict.py    # → ir/equivalence_dict.json
 python ir/scripts/translate_dataset.py         # → ir/translated_dataset.parquet
 python ir/scripts/train_embeddings.py          # → ir/embeddings/fasttext.{bin,vec}
 python ir/scripts/eval_embeddings.py
 ```
 
-### 5. Classificadores (detecção binária)
+### 5. Classifiers (binary detection)
 
 ```bash
 python ir/scripts/train_rf.py --binary --out ir/rf_model_binary
@@ -70,56 +70,60 @@ python ir/scripts/train_lgbm.py --out ir/lgbm_model
 python ir/scripts/train_lgbm.py --ngram-max 3 --out ir/lgbm_model_trigram
 python ir/scripts/train_lgbm_meta.py
 python ir/scripts/train_svm.py
-python ir/scripts/eval_lgbm.py                 # latência de inferência e importância de features
+python ir/scripts/eval_lgbm.py                 # inference latency and feature importance
 ```
 
-BiLSTM e Transformer foram treinados em GPU no cluster; os hiperparâmetros estão em `ir/cluster/train_bilstm.sh` e `transformer/cluster/train*.sh`.
+BiLSTM and Transformer were trained on GPUs on the cluster; hyperparameters are in `ir/cluster/train_bilstm.sh` and `transformer/cluster/train*.sh`.
 
-### 6. Contexto de script e inferência iterativa
+### 6. Script context and iterative inference
 
-Cada passo usa as probabilidades do modelo anterior para recalcular estatísticas por script:
+Each step uses the previous model's probabilities to recompute per-script statistics:
 
 ```bash
-python ir/scripts/compute_script_density.py            # a partir de ir/lgbm_model
-python ir/scripts/train_lgbm_density.py                # → ir/lgbm_model_density   (F1 0,853)
+python ir/scripts/compute_script_density.py            # from ir/lgbm_model
+python ir/scripts/train_lgbm_density.py                # → ir/lgbm_model_density   (F1 0.853)
 python ir/scripts/compute_script_stats_predicted.py
-python ir/scripts/train_lgbm_density_v2.py             # → ir/lgbm_model_density_v2 (F1 0,874)
+python ir/scripts/train_lgbm_density_v2.py             # → ir/lgbm_model_density_v2 (F1 0.874)
 python ir/scripts/compute_script_stats_iter.py --model-dir ir/lgbm_model_density_v2 \
     --prev-stats ir/script_stats_predicted.json --out ir/script_stats_iter2.json
 python ir/scripts/train_lgbm_density_iter.py --stats ir/script_stats_iter2.json \
-    --out ir/lgbm_model_density_v3b --neg-ratio 7       # iteração 2 (F1 0,901)
+    --out ir/lgbm_model_density_v3b --neg-ratio 7       # iteration 2 (F1 0.901)
 python ir/scripts/compute_script_stats_iter.py --model-dir ir/lgbm_model_density_v3b \
     --prev-stats ir/script_stats_iter2.json --out ir/script_stats_iter3.json
 python ir/scripts/train_lgbm_density_iter.py --stats ir/script_stats_iter3.json \
-    --out ir/lgbm_model_density_v4 --neg-ratio 7        # iteração 3 (F1 0,904)
+    --out ir/lgbm_model_density_v4 --neg-ratio 7        # iteration 3 (F1 0.904)
 ```
 
-Limite superior com rótulos reais por script (não implantável):
+Upper bound using ground-truth per-script labels (not deployable):
 
 ```bash
 python ir/scripts/compute_script_stats.py
-python ir/scripts/train_lgbm_sprint11.py               # → ir/lgbm_model_sprint11 (F1 0,928)
+python ir/scripts/train_lgbm_sprint11.py               # → ir/lgbm_model_sprint11 (F1 0.928)
 ```
 
-### 7. Cross-engine e multilabel
+### 7. Cross-engine and multilabel
 
 ```bash
-python ir/scripts/train_lgbm_crossengine.py     # zero-shot e modelo conjunto, bigramas
-python ir/scripts/train_lgbm_crossengine_v2.py  # idem, com contexto iterativo
+python ir/scripts/train_lgbm_crossengine.py     # zero-shot and joint model, bigrams
+python ir/scripts/train_lgbm_crossengine_v2.py  # same, with iterative context
 python ir/scripts/train_rf.py --out ir/rf_model
 python ir/scripts/train_lgbm_multilabel.py
 ```
 
-## Resultados principais
+## Main results
 
-| Modelo | F1 |
+| Model | F1 |
 |---|---|
-| RF, unigramas | 0,834 |
-| LightGBM, bigramas | 0,843 |
-| LightGBM, bigramas + densidade de script | 0,853 |
-| LightGBM + inferência iterativa (iter. 3) | **0,904** |
-| LightGBM + contexto real (oracle) | 0,928 |
-| Zero-shot V8 → SM / SM → V8 | 0,149 / 0,180 |
-| Modelo conjunto com contexto iterativo, Chromium / Firefox | 0,903 / 0,904 |
+| RF, unigrams | 0.834 |
+| LightGBM, bigrams | 0.843 |
+| LightGBM, bigrams + script density | 0.853 |
+| LightGBM + iterative inference (iter. 3) | **0.904** |
+| LightGBM + ground-truth context (oracle) | 0.928 |
+| Zero-shot V8 → SM / SM → V8 | 0.149 / 0.180 |
+| Joint model with iterative context, Chromium / Firefox | 0.903 / 0.904 |
 
-Discussão completa nos capítulos 6 e 7 da monografia.
+Full discussion in chapters 6 and 7 of the thesis.
+
+## License
+
+MIT (see `LICENSE`). The ABNT/UFRGS LaTeX classes in `thesis/TCC/` keep their own licenses.

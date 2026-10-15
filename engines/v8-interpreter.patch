@@ -1,5 +1,5 @@
 diff --git a/src/interpreter/interpreter.cc b/src/interpreter/interpreter.cc
-index fa3974c08bd..e8084f4e0bf 100644
+index fa3974c08bd..eb8b5841415 100644
 --- a/src/interpreter/interpreter.cc
 +++ b/src/interpreter/interpreter.cc
 @@ -4,8 +4,9 @@
@@ -30,9 +30,9 @@ index fa3974c08bd..e8084f4e0bf 100644
                             index);
  }
  
-+// FNV-1a 64-bit: hash estável entre execuções e plataformas.
-+// std::hash<std::string> é randomizado por sessão em muitos compiladores
-+// (seed via ASLR), tornando os IDs irreproduzíveis entre runs.
++// FNV-1a 64-bit: hash stable across runs and platforms.
++// std::hash<std::string> is randomized per session by many compilers
++// (ASLR seed), which would make IDs irreproducible across runs.
 +uint64_t FNV1a64(const std::string& s) {
 +  uint64_t h = 14695981039346656037ULL;
 +  for (unsigned char c : s) {
@@ -125,7 +125,7 @@ index fa3974c08bd..e8084f4e0bf 100644
  InterpreterCompilationJob::Status InterpreterCompilationJob::DoFinalizeJobImpl(
      DirectHandle<SharedFunctionInfo> shared_info, IsolateT* isolate) {
 +
-+  // Guarda: Built-ins, extensões e WASM não têm Script associado.
++  // Guard: built-ins, extensions and WASM have no associated Script.
 +  Tagged<Object> raw_script = shared_info->script(kAcquireLoad);
 +  if (!IsScript(raw_script)) {
 +    Handle<BytecodeArray> bytecodes_plain = compilation_info_.bytecode_array();
@@ -163,7 +163,7 @@ index fa3974c08bd..e8084f4e0bf 100644
 -    DirectHandle<TrustedByteArray> source_position_table =
 -        generator()->FinalizeSourcePositionTable(isolate);
 -    bytecodes->set_source_position_table(*source_position_table, kReleaseStore);
-+  // ── 1. IDENTIFICAÇÃO ESTÁVEL DA FUNÇÃO ──────────────────────────────────────
++  // ── 1. STABLE FUNCTION ID ─────────────────────────────────────────────────
 +  std::string script_url_str = "unknown";
 +  {
 +      Tagged<Object> name = script->name();
@@ -192,14 +192,14 @@ index fa3974c08bd..e8084f4e0bf 100644
 +      "/" + std::to_string(end_pos);
 +  const std::string injected_id = "fn_" + std::to_string(FNV1a64(seed));
 +
-+  // Nome legível: usa o literal AST (não acessa heap V8, seguro em background)
++  // Readable name from the AST literal (no V8 heap access, safe off-thread)
 +  std::string func_debug_name;
 +  {
 +    std::unique_ptr<char[]> raw = compilation_info_.literal()->GetDebugName();
 +    func_debug_name = (raw && raw[0] != '\0') ? raw.get() : "(anonymous)";
 +  }
 +
-+  // ── 2. SEQUÊNCIA DE BYTECODES ────────────────────────────────────────────────
++  // ── 2. BYTECODE SEQUENCE ──────────────────────────────────────────────────
 +  std::string bytecode_sequence;
 +  if (!bytecodes.is_null()) {
 +    interpreter::BytecodeArrayIterator it(bytecodes);
@@ -210,7 +210,7 @@ index fa3974c08bd..e8084f4e0bf 100644
 +      it.Advance();
 +    }
 +    if (!bytecode_sequence.empty()) {
-+      bytecode_sequence.pop_back();  // remove vírgula final
++      bytecode_sequence.pop_back();  // drop trailing comma
 +    }
 +  } else {
 +    bytecode_sequence = "<lazy_or_empty>";
@@ -241,12 +241,12 @@ index fa3974c08bd..e8084f4e0bf 100644
 +    }
 +  }
 +
-+  // ── 3. EMISSÃO PARA STDERR (capturado pelo crawler via subprocess.PIPE) ─────
++  // ── 3. EMIT TO STDERR (read by the crawler via subprocess.PIPE) ───────────
 +  {
 +    static std::mutex v8log_mutex;
 +    std::lock_guard<std::mutex> lock(v8log_mutex);
 +
-+    // Escapa aspas e barras para não quebrar o JSON
++    // Escape quotes and backslashes to keep the JSON valid
 +    auto json_escape = [](const std::string& s) {
 +      std::string out;
 +      out.reserve(s.size());

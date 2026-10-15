@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "TCC FP Tracer",
   "version": "2.0",
-  "description": "Injeta hooks de fingerprinting (Canvas, Canvas Font, AudioContext, WebRTC) para captura de traces (TCC UFRGS)",
+  "description": "Hooks fingerprinting APIs and records the calling functions for bytecode labeling",
   "browser_specific_settings": {
     "gecko": {
       "id": "tcc-fp-tracer@ufrgs.br"

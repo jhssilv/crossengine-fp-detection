@@ -158,7 +158,7 @@ def _build_fp_agg(conn: duckdb.DuckDBPyConnection,
         GROUP BY {url_col}, {name_col}
     """)
     n = conn.execute(f"SELECT COUNT(*) FROM {tbl}").fetchone()[0]
-    print(f"  {n:,} pares (url, func) no índice de fp_calls")
+    print(f"  {n:,} (url, func) pairs in the fp_calls index")
     return tbl
 
 
@@ -254,13 +254,13 @@ def _process_browser(conn: duckdb.DuckDBPyConnection,
                 _flush()
 
             if processed % LOG_EVERY == 0:
-                print(f"  [{processed:,} únicas processadas | {fp_total} FP]")
+                print(f"  [{processed:,} unique processed | {fp_total} FP]")
         except Exception as e:
-            print(f"  [AVISO] Leitura interrompida após {processed:,} linhas: {e}")
+            print(f"  [WARN] Read interrupted after {processed:,} lines: {e}")
 
     _flush()
     del seen
-    print(f"  Concluído: {processed:,} funções únicas | FP: {fp_total}")
+    print(f"  Done: {processed:,} unique functions | FP: {fp_total}")
     return total, fp_total
 
 
@@ -282,15 +282,15 @@ def main():
         if args.browser not in (browser, "all"):
             continue
         if not bc.exists():
-            print(f"[SKIP] {bc.name} não encontrado")
+            print(f"[SKIP] {bc.name} not found")
             continue
         if not fp.exists():
-            print(f"[SKIP] {fp.name} não encontrado")
+            print(f"[SKIP] {fp.name} not found")
             continue
         todo.append((browser, bc, fp, uc, nc))
 
     if not todo:
-        sys.exit("[ERRO] Nenhum arquivo de entrada encontrado.")
+        sys.exit("[ERROR] No input files found.")
 
     # DuckDB in-memory — only fp_agg tables live here (~50 MB each)
     conn = duckdb.connect()
@@ -303,10 +303,10 @@ def main():
     try:
         for browser, bc_file, fp_file, url_col, name_col in todo:
             print(f"\n── {browser} ──────────────────────────────────────")
-            print(f"  Carregando fp_calls de {fp_file.name}...")
+            print(f"  Loading fp_calls from {fp_file.name}...")
             fp_tbl = _build_fp_agg(conn, browser.lower(), fp_file, url_col, name_col)
 
-            print(f"  Streamindo bytecodes de {bc_file.name}...")
+            print(f"  Streaming bytecodes from {bc_file.name}...")
             n, fp = _process_browser(conn, browser, bc_file, fp_tbl, pw)
             total_records += n
             total_fp      += fp
@@ -315,7 +315,7 @@ def main():
 
     tmp.rename(OUTPUT_FILE)
     mb = OUTPUT_FILE.stat().st_size / 1_048_576
-    print(f"\nDataset: {total_records:,} funções, {total_fp:,} FP → {OUTPUT_FILE.name} ({mb:.1f} MB)")
+    print(f"\nDataset: {total_records:,} functions, {total_fp:,} FP → {OUTPUT_FILE.name} ({mb:.1f} MB)")
 
     # ── Containment propagation ───────────────────────────────────────────────
     # For each non-FP function whose source range directly contains at least one
@@ -377,7 +377,7 @@ def main():
     prop_tmp.rename(PROP_FILE)
     prop_mb = PROP_FILE.stat().st_size / 1_048_576
     total_fp_prop = total_fp + n_new
-    print(f"  Propagated dataset: {total_records:,} funções, {total_fp_prop:,} FP → "
+    print(f"  Propagated dataset: {total_records:,} functions, {total_fp_prop:,} FP → "
           f"{PROP_FILE.name} ({prop_mb:.1f} MB)")
 
     # Query label breakdown and write stats sidecar (read by status.py without deps)

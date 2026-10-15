@@ -1,5 +1,5 @@
 diff --git a/js/src/frontend/BytecodeEmitter.cpp b/js/src/frontend/BytecodeEmitter.cpp
-index 8a7838d205..43a18cafb5 100644
+index 8a7838d205..df3d329f7c 100644
 --- a/js/src/frontend/BytecodeEmitter.cpp
 +++ b/js/src/frontend/BytecodeEmitter.cpp
 @@ -28,6 +28,7 @@
@@ -24,7 +24,7 @@ index 8a7838d205..43a18cafb5 100644
  #include "vm/ConstantCompareOperand.h"  // ConstantCompareOperand
  #include "vm/FunctionPrefixKind.h"      // FunctionPrefixKind
  #include "vm/GeneratorObject.h"         // AbstractGeneratorObject
-+#include "vm/JSAtomUtils.h"    // Deve vir antes de TypeofEqOperand.h (se ele existir abaixo)
++#include "vm/JSAtomUtils.h"    // Must come before TypeofEqOperand.h (if included below)
 +#include "vm/JSScript.h"       // JSAtomUtils-inl.h deve vir DEPOIS deste
  #include "vm/Opcodes.h"                 // JSOp, JSOpLength_*
  #include "vm/PropMap.h"          // SharedPropMap::MaxPropsForNonDictionary
@@ -69,7 +69,7 @@ index 8a7838d205..43a18cafb5 100644
 +              auto nameIndex = compilationState.parserAtoms.internAscii(
 +                  fc, final_name.c_str(), final_name.length());
 +              
-+              // Definimos apenas o Display Atom (nome visível para Logs e Stack Traces)
++              // Only set the display atom (name shown in logs and stack traces)
 +              funbox->displayAtom() = nameIndex;
 +          }
 +      }
@@ -89,7 +89,7 @@ index 8a7838d205..43a18cafb5 100644
 +    
 +    for (auto pc = codeSection.begin(); pc < codeSection.end(); ) {
 +        JSOp op = JSOp(*pc);
-+        const char* opname = CodeName(op); // Mudei para opname para não dar conflito
++        const char* opname = CodeName(op); // named opname to avoid a name clash
 +        if (opname) {
 +            bytecode_sequence += opname;
 +            bytecode_sequence += ", ";
@@ -103,10 +103,10 @@ index 8a7838d205..43a18cafb5 100644
 +    fprintf(stderr, "Start: %u\n", funNode->pn_pos.begin);
 +    fprintf(stderr, "End: %u\n", funNode->pn_pos.end);
 +
-+    // GERAÇÃO DO NOME SEGURO (Apenas para o Log, sem alterar o motor!)
++    // Build a stable name (log only, engine behavior unchanged)
 +    std::string function_name_log = "anonymous";
 +
-+    // Se o Firefox já deu um nome, usamos ele
++    // Use the name Firefox already assigned, if any
 +    if (funbox->displayAtom() &&
 +        funbox->displayAtom() != TaggedParserAtomIndex::WellKnown::anonymous() && fc) {
 +        auto nameChars = compilationState.parserAtoms.toNewUTF8CharsZ(fc, funbox->displayAtom());
@@ -114,7 +114,7 @@ index 8a7838d205..43a18cafb5 100644
 +            function_name_log = nameChars.get();
 +        }
 +    } else {
-+        // Se for anônima, geramos o nosso Hash na hora de imprimir
++        // Anonymous function: generate our hash at print time
 +        std::hash<std::string> hasher;
 +        std::string seed = std::string(filename) +
 +                           "_pos" + std::to_string(funNode->pn_pos.begin) +

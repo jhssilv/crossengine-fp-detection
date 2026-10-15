@@ -1,134 +1,62 @@
-# Instrumentação dos Motores JavaScript
+# JavaScript engine instrumentation
 
-Documentação técnica das modificações realizadas no V8 (Chromium) e no SpiderMonkey (Firefox) para extração de bytecodes e rastreamento de funções anônimas.
+Changes made to V8 (Chromium) and SpiderMonkey (Firefox) to dump the bytecodes of every compiled function and to trace anonymous functions.
 
----
+## Overview
 
-## Visão Geral
+The instrumentation captures, at compile time, the bytecode sequence of each JavaScript function together with metadata that links it to fingerprinting API calls observed at runtime. Each engine writes to stderr with its own prefix:
 
-O objetivo da instrumentação é capturar, **no momento da compilação JIT**, a sequência de bytecodes de cada função JavaScript junto com metadados que permitam ligá-la a chamadas de APIs de fingerprinting observadas em tempo de execução.
-
-Cada engine emite os dados em stderr com um prefixo distinto:
-
-| Engine | Prefixo | Arquivo resultante |
+| Engine | Prefix | Crawler output |
 |---|---|---|
 | V8 (Chromium) | `[V8Log]` | `data/chromium_v8_bytecodes.jsonl.gz` |
 | SpiderMonkey (Firefox) | `[SpiderMonkey Log]` | `data/firefox_sm_bytecodes.jsonl.gz` |
 
 ## Patches
 
-| Patch | Arquivo alterado | Commit base |
+| Patch | File changed | Base commit |
 |---|---|---|
 | `v8-interpreter.patch` | `v8/src/interpreter/interpreter.cc` | V8 `15ab4d3626ed3b62c096f90073cf3d8a6e3c300a` |
 | `spidermonkey-bytecode-emitter.patch` | `js/src/frontend/BytecodeEmitter.cpp` | gecko-dev `5836a062726f715fda621338a17b51aff30d0a8c` |
 
-Os crawlers esperam as árvores em `navegadores/` (ignorado pelo git):
+The crawlers expect the source trees under `navegadores/` (gitignored):
 
 ```bash
 git -C navegadores/v8-tcc/v8 apply ../../../engines/v8-interpreter.patch
 git -C navegadores/spidermonkey-tcc/gecko-dev apply ../../../engines/spidermonkey-bytecode-emitter.patch
 ```
 
----
+## 1. V8 (`interpreter.cc`)
 
-## 1. V8 — `interpreter.cc`
+The instrumentation lives in `DoFinalizeJobImpl`, which Ignition calls when it finishes compiling a function, right after the `BytecodeArray` is generated. Functions without a `Script` (built-ins, extensions, WASM) are skipped.
 
-### O que foi adicionado
-
-A função `DoFinalizeJobImpl` é chamada pelo Ignition (interpretador de bytecodes do V8) ao finalizar a compilação de cada função JavaScript. A instrumentação fica dentro dessa função, após a geração do `BytecodeArray`.
-
-#### 1.1 ID Estável por Função (`injected_id`)
-
-Para cada função, calcula-se um identificador determinístico usando **FNV-1a 64 bits** sobre a semente:
+**Stable ID.** Each function gets a deterministic `injected_id`: FNV-1a 64-bit over
 
 ```
 "v8/" + script_url + "/" + start_pos + "/" + end_pos
 ```
 
-`start_pos` e `end_pos` são offsets de caractere dentro do script-fonte. Funções anônimas recebem o mesmo ID sempre que o script é recarregado na mesma posição — isso é a base do rastreamento cross-sessão.
+where `start_pos`/`end_pos` are character offsets in the script source. FNV-1a is used instead of `std::hash`, which many compilers randomize per process.
 
-```cpp
-const std::string seed =
-    "v8/" + script_url_str +
-    "/" + std::to_string(start_pos) +
-    "/" + std::to_string(end_pos);
-const std::string injected_id = "fn_" + std::to_string(FNV1a64(seed));
-```
-
-#### 1.2 Sequência de Bytecodes
-
-Itera sobre o `BytecodeArray` via `BytecodeArrayIterator`, concatenando os nomes dos bytecodes separados por vírgula:
-
-```cpp
-interpreter::BytecodeArrayIterator it(bytecodes);
-while (!it.done()) {
-    bytecode_sequence += interpreter::Bytecodes::ToString(it.current_bytecode());
-    bytecode_sequence += ',';
-    it.Advance();
-}
-```
-
-#### 1.3 Emissão para Stderr
-
-Um mutex estático (`v8log_mutex`) garante que linhas de múltiplas threads de compilação não se misturem:
-
-```cpp
-std::cerr << "[V8Log] "
-          << "{\"injected_id\":\"" << injected_id << "\""
-          << ",\"script_url\":\""  << json_escape(script_url_str) << "\""
-          << ",\"script_id\":"     << script_id
-          << ",\"start_pos\":"     << start_pos
-          << ",\"end_pos\":"       << end_pos
-          << ",\"func_name\":\""   << json_escape(func_debug_name) << "\""
-          << ",\"bytecodes\":\""   << json_escape(bytecode_sequence) << "\""
-          << "}\n" << std::flush;
-```
-
-Funções sem `Script` associado (built-ins, extensões internas, WASM) são descartadas antes desse ponto via guarda `IsScript(raw_script)`.
-
-### Formato de saída (V8)
-
-Cada linha de stderr com prefixo `[V8Log]` contém um JSON:
+**Output.** One JSON line per function, serialized by a static mutex so that concurrent compiler threads do not interleave:
 
 ```json
-{
-  "injected_id": "fn_12345678901234567",
-  "script_url":  "https://example.com/bundle.js",
-  "script_id":   42,
-  "start_pos":   1024,
-  "end_pos":     2048,
-  "func_name":   "canvasFingerprint",
-  "bytecodes":   "LdaConstant,Star0,CallProperty0,..."
-}
+{"injected_id":"fn_12345678901234567","script_url":"https://example.com/bundle.js","script_id":42,"start_pos":1024,"end_pos":2048,"func_name":"canvasFingerprint","bytecodes":"LdaConstant,Star0,CallProperty0,..."}
 ```
 
-| Campo | Tipo | Descrição |
-|---|---|---|
-| `injected_id` | string | Hash FNV-1a 64 bits, prefixado com `fn_`. Estável entre sessões. |
-| `script_url` | string | URL do script (ou `"unknown"` para scripts inline). |
-| `script_id` | int | ID interno do V8 para o script nessa sessão. |
-| `start_pos` | int | Offset de início da função no script-fonte (bytes). |
-| `end_pos` | int | Offset de fim da função no script-fonte (bytes). |
-| `func_name` | string | Nome AST da função; `"(anonymous)"` para funções sem nome. |
-| `bytecodes` | string | Sequência de opcodes separada por vírgula. |
+| Field | Description |
+|---|---|
+| `injected_id` | FNV-1a 64-bit hash with `fn_` prefix; stable across sessions |
+| `script_url` | Script URL (the page URL for inline scripts) |
+| `script_id` | V8 internal script ID for this session |
+| `start_pos`, `end_pos` | Function offsets in the script source |
+| `func_name` | AST name; `"(anonymous)"` for unnamed functions |
+| `bytecodes` | Comma-separated opcodes |
 
----
+## 2. SpiderMonkey (`BytecodeEmitter.cpp`)
 
-## 2. SpiderMonkey — `gecko-dev`
+Each anonymous function gets the display name `anon_injected_<hash>`, where the hash (`std::hash`) covers the script URL and the function position. The display name shows up in `Error.stack`, so the extension captures the same identifier as the bytecode log, and the Firefox join is purely name-based.
 
-### Localização do build
-
-```
-navegadores/spidermonkey-tcc/gecko-dev/obj-x86_64-pc-linux-gnu/dist/bin/firefox
-```
-
-### O que foi adicionado
-
-No `BytecodeEmitter`, cada função anônima recebe o nome de exibição `anon_injected_<hash>`, onde o hash (`std::hash`) é calculado sobre URL do script e posição da função. Como o nome de exibição aparece em `Error.stack`, a extensão captura o mesmo identificador que o log de bytecodes, e a junção no Firefox é feita só por nome.
-
-A instrumentação emite blocos de texto delimitados em stderr para cada função compilada. O parser do crawler (`parse_spidermonkey_logs()` no `firefox-crawler.py`) transforma esses blocos no mesmo JSONL do Chromium (sem `start_pos`/`end_pos`).
-
-### Formato de saída (SpiderMonkey)
+Each compiled function is written to stderr as a text block:
 
 ```
 [SpiderMonkey Log]
@@ -141,120 +69,70 @@ Bytecode: [FunctionThis, SetLocal, Pop, GetGName, ...]
 ========================================
 ```
 
-| Campo | Descrição |
-|---|---|
-| `Script URL` | URL do script. Scripts `resource://` e `chrome://` são filtrados pelo parser. |
-| `Internal Index` | Índice sequencial da função dentro do script nessa sessão. |
-| `Function name` | Nome da função; string vazia para anônimas. |
-| `Bytecode` | Lista de opcodes SpiderMonkey entre colchetes, separados por vírgula e espaço. |
+`parse_spidermonkey_logs()` in `crawlers/firefox-crawler.py` turns these blocks into the same JSONL as Chromium (without `start_pos`/`end_pos`) and drops internal URLs (`resource://`, `chrome://`, `moz-extension://`, ...).
 
----
+## 3. Fingerprinting API capture (shared extension)
 
-## 3. Captura de APIs de Fingerprinting (Extensão Compartilhada)
+`extension/` is loaded in both browsers. `content.js` runs in the MAIN world at `document_start` in every frame and hooks Canvas, Canvas Font, AudioContext, WebRTC, WebGL, `screen` and `navigator` APIs (full list in `content.js`). It also normalizes Firefox-only properties (`navigator.oscpu`, `buildID`, `mozInnerScreenX`, ...) so fingerprinting libraries do not skip collection after detecting the browser.
 
-A extensão em `extension/` é carregada em ambos os browsers. O `content.js` roda no **MAIN world** (`document_start`, todos os frames), interceptando as APIs do paper ByteDefender:
-
-Intercepta APIs de Canvas, Canvas Font, AudioContext, WebRTC, WebGL, `screen` e `navigator` (lista completa em `extension/content.js`). Também normaliza propriedades exclusivas do Firefox (`navigator.oscpu`, `buildID`, `mozInnerScreenX`, ...) para que bibliotecas de fingerprinting não pulem coletas ao detectar o navegador.
-
-Cada chamada captura a stack trace (formatos V8 e Gecko suportados) e extrai:
+Each call records one entry per HTTP frame in the stack trace (V8 and Gecko formats):
 
 ```json
-{
-  "api":       "canvas.toDataURL",
-  "funcName":  "canvasFingerprint",
-  "scriptUrl": "https://example.com/bundle.js",
-  "line":      42,
-  "col":       9
-}
+{"api":"canvas.toDataURL","funcName":"canvasFingerprint","scriptUrl":"https://example.com/bundle.js","line":42,"col":9}
 ```
 
-Os dados são coletados pelo crawler via `driver.execute_script("return window.__fpCalls")` (Firefox) ou `page.evaluate(...)` (Chromium).
+The crawlers read `window.__fpCalls` after each page.
 
----
+## 4. Building
 
-## 4. Como Recompilar
+### 4.1 Chromium (PCAD/UFRGS cluster)
 
-### 4.1 Chromium — PCAD/UFRGS
-
-O binário instrumentado é gerado no cluster PCAD via SLURM.
-
-Os scripts assumem a conta e os caminhos usados no PCAD; ajuste `CLUSTER_USER` e os caminhos antes de usar.
+The instrumented binary was built on the PCAD cluster with SLURM. The scripts hardcode the account and paths used there; adjust `CLUSTER_USER` and the paths before using them. `build_chromium.slurm.sh` must be in `CLUSTER_SRC` on the cluster.
 
 ```bash
-# 1. Copia o interpreter.cc modificado para o cluster
+# 1. Copy the patched interpreter.cc to the cluster
 scp navegadores/v8-tcc/v8/src/interpreter/interpreter.cc \
-    <usuario>@pcad.inf.ufrgs.br:~/tcc/v8/src/interpreter/interpreter.cc
+    <user>@pcad.inf.ufrgs.br:~/tcc/v8/src/interpreter/interpreter.cc
 
-# 2. Submete o job e monitora (faz download automático ao final)
+# 2. Submit the job and monitor it (downloads the binary when done)
 bash engines/start-build.sh
 
-# Retomar monitoramento de job existente:
+# Resume monitoring an existing job
 bash engines/start-build.sh <JOB_ID>
 ```
 
-O script SBATCH (`engines/build_chromium.slurm.sh`) copia o `interpreter.cc` para o source tree do Chromium, regenera os arquivos GN e compila com ninja. O binário final é extraído em:
+The binary is extracted to `navegadores/v8-tcc/out/Release/chrome`. To check the instrumentation:
 
-```
-navegadores/v8-tcc/out/Release/chrome
-```
-
-**Verificar instrumentação no binário:**
 ```bash
-strings navegadores/v8-tcc/out/Release/chrome | grep -c '\[V8Log\]'
-# Deve retornar > 0
+strings navegadores/v8-tcc/out/Release/chrome | grep -c '\[V8Log\]'   # must be > 0
 ```
 
-### 4.2 Firefox — Build local
+### 4.2 Firefox (local)
 
 ```bash
 cd navegadores/spidermonkey-tcc/gecko-dev
-
-# Compilar apenas o motor JS (rápido, ~10 min)
-python3.12 mach build
-
-# Ou compilar o browser completo (lento, ~60 min)
 python3.12 mach build browser
 ```
 
-**Atenção:** o build gera symlinks em `dist/bin/` com o caminho absoluto do source. Se a árvore for movida depois do build, crie um symlink no caminho antigo apontando para o novo (ou recompile).
+The build creates symlinks in `dist/bin/` with the absolute source path. If the tree is moved after building, add a symlink at the old path pointing to the new one, or rebuild.
 
----
-
-## 5. Como Validar
-
-### 5.1 V8
+## 5. Validating
 
 ```bash
-# Lança o Chrome e filtra linhas V8Log do stderr
-navegadores/v8-tcc/out/Release/chrome \
-  --no-sandbox \
-  --js-flags='--single-threaded' \
-  https://browserleaks.com/canvas \
-  2>&1 | grep '^\[V8Log\]' | head -3
-```
+navegadores/v8-tcc/out/Release/chrome --no-sandbox --js-flags='--single-threaded' \
+  https://browserleaks.com/canvas 2>&1 | grep '^\[V8Log\]' | head -3
 
-Saída esperada (uma linha JSON por função):
-```
-[V8Log] {"injected_id":"fn_...","script_url":"https://...","func_name":"...","bytecodes":"..."}
-```
-
-### 5.2 SpiderMonkey
-
-```bash
 navegadores/spidermonkey-tcc/gecko-dev/obj-x86_64-pc-linux-gnu/dist/bin/firefox \
   --headless --no-remote --profile /tmp/ff-test \
-  https://browserleaks.com/canvas \
-  2>&1 | grep -A4 '^\[SpiderMonkey Log\]' | head -20
+  https://browserleaks.com/canvas 2>&1 | grep -A6 '^\[SpiderMonkey Log\]' | head -20
 ```
 
----
+## 6. Known limitations
 
-## 6. Limitações Conhecidas
-
-| Limitação | Detalhe |
+| Limitation | Detail |
 |---|---|
-| **Scripts lazy-loaded** | Bytecodes só são emitidos quando a função é compilada. Funções em lazy load só aparecem se a página as executar durante o crawl. |
-| **Web Workers** | A extensão não injeta hooks em Workers (contexto isolado). APIs de fingerprinting chamadas de Workers não são capturadas. |
-| `eval` / `new Function` | Funções geradas em runtime recebem `injected_id` baseado na posição do `eval`, não do código gerado. |
-| **Compilação paralela (V8)** | O mutex `v8log_mutex` serializa as escritas, mas pode criar gargalo em compilações com muitos threads. Mitigado com `--single-threaded`. |
-| **`script_url` vazio** | Scripts inline (sem `src=`) reportam a URL da página HTML. O `start_pos`/`end_pos` é relativo ao HTML completo. |
+| Lazy compilation | Bytecodes are only emitted when a function is compiled; lazily loaded code appears only if the page runs it during the crawl. |
+| Web Workers | The extension does not hook Workers, so fingerprinting done inside Workers is not captured. |
+| `eval` / `new Function` | Runtime-generated functions get an ID based on the position of the `eval`, not of the generated code. |
+| Parallel compilation (V8) | The mutex serializes writes and can become a bottleneck; mitigated with `--single-threaded`. |
+| Inline scripts | Report the page URL; `start_pos`/`end_pos` are relative to the whole HTML. |
