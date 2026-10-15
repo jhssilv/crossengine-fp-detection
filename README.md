@@ -21,6 +21,8 @@ Thesis (in Portuguese, with English abstract): [LUME/UFRGS](https://lume.ufrgs.b
 
 Not versioned (generated locally): `navegadores/` (browser source trees and builds), `data/` (crawl output and labeled datasets), `ir/*.parquet`, `ir/corpus.txt`, `ir/script_*.json` and model binaries (`*.pkl`, `*.pt`, `*.bin`).
 
+The trained LightGBM models of the iterative inference chain (`lgbm_model` to `lgbm_model_density_v4`) are attached to the [v1.0 release](https://github.com/jhssilv/crossengine-fp-detection/releases/tag/v1.0) as `models.zip`.
+
 ## Reproducing
 
 Tested with Python 3.14. The crawl and intermediate datasets take about 150 GB.
