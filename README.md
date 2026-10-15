@@ -35,7 +35,7 @@ playwright install
 
 The Firefox crawler and `ir/scripts/run_microscripts.py` also need [geckodriver](https://github.com/mozilla/geckodriver) (the micro-script runner expects it at `/usr/local/bin/geckodriver`).
 
-Steps 1 to 3 can be skipped by downloading the datasets from [Zenodo](https://doi.org/10.5281/zenodo.23394257) into `data/` (`labeled_dataset_clean.parquet`) and `ir/` (`translated_dataset.parquet`). Query strings in their `script_url` column are pseudonymized, which does not change any result.
+Steps 1 to 3 can be skipped by downloading the datasets from [Zenodo](https://doi.org/10.5281/zenodo.23394257), merging the parts as described in its README, and placing `labeled_dataset_clean.parquet` in `data/` and `translated_dataset.parquet` in `ir/`. Query strings in their `script_url` column are pseudonymized, which does not change any result.
 
 ### 1. Instrumented browsers
 
